@@ -169,6 +169,26 @@ class Header extends React.Component {
                                 <a><TotalBalanceValue.AccountWrapper label="exchange.balance" accounts={[this.props.currentAccount]} inHeader={true}/></a>
                             </div>) : null;
 
+        let guronDropDown =
+            <ActionSheet>
+                <ActionSheet.Button title="">
+                    <a style={{padding: "1rem", border: "none"}} className="button">
+                        &nbsp;Guron services&nbsp;
+                        <Icon className="icon-14px" name="chevron-down"/>
+                    </a>
+                </ActionSheet.Button>
+                <ActionSheet.Content >
+                    <ul className="no-first-element-top-border">
+                        <li>
+                            <a href="https://www.guron.biz">Delivery & Logistics</a>
+                        </li>
+                        <li>
+                            <a href="https://www.guronechager.com">Currency exchange</a>
+                        </li>
+                    </ul>
+                </ActionSheet.Content>
+            </ActionSheet>;
+
         let dashboard = (
             <a
                 style={{paddingTop: 12, paddingBottom: 12}}
@@ -320,6 +340,7 @@ class Header extends React.Component {
                         </li>
                     </ul>
                 </div> : null}
+
                 <div className="grid-block show-for-medium">
                     <ul className="menu-bar">
                         <li>{dashboard}</li>
@@ -330,6 +351,11 @@ class Header extends React.Component {
                         {enableDepositWithdraw && currentAccount && myAccounts.indexOf(currentAccount) !== -1 ? <li><Link to={"/deposit-withdraw/"} activeClassName="active"><Translate content="account.deposit_withdraw"/></Link></li> : null}
                     </ul>
                 </div>
+
+                <div align ="left" className="grp-menu-item overflow-visible account-drop-down">
+                    {guron}
+                </div>
+
                 <div className="grid-block show-for-medium shrink">
                     <div className="grp-menu-items-group header-right-menu">
 

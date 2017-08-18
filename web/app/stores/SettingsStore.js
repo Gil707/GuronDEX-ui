@@ -34,10 +34,10 @@ class SettingsStore {
 
         this.initDone = false;
         this.defaultSettings = Immutable.Map({
-            locale: "en",
+            locale: "ru",
             apiServer: settingsAPIs.DEFAULT_WS_NODE,
             faucet_address: settingsAPIs.DEFAULT_FAUCET,
-            unit: CORE_ASSET,
+            unit: "RUBLE",
             showSettles: false,
             showAssetPercent: false,
             walletLockTimeout: 60 * 10,
@@ -66,9 +66,10 @@ class SettingsStore {
                 CORE_ASSET,
                 "USD",
                 "CNY",
+                "RUBLE",
                 "BTC",
                 "EUR",
-                "GBP"
+                // "GBP"
             ],
             showSettles: [
                 {translate: "yes"},
@@ -163,7 +164,7 @@ class SettingsStore {
 
             let bases = {
                 markets_4018d784: [ // BTS MAIN NET
-                    "USD", "OPEN.BTC", "CNY", "BTS", "BTC"
+                    "USD", "OPEN.BTC", "CNY", "BTS", "BTC", "RUBLE"
                 ],
                 markets_39f5e2ed: [ // TESTNET
                     "TEST"

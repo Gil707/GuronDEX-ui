@@ -32,13 +32,13 @@
 
 @mixin SegoeUILight {
   font-family: 'wf_SegoeUILight', 'Segoe UI Light', 'Segoe WP Light', 'wf_SegoeUI', 'Segoe UI', 'Segoe', 'Segoe WP', 'Tahoma', 'Verdana', arial, sans-serif;
-  font-size: 90%;
+  font-size: 60%;
   font-weight: lighter;
 }
 
 @mixin SegoeUIRegular {
   font-family: 'wf_SegoeUI', 'Segoe UI', 'Segoe', 'Segoe WP', 'Tahoma', 'Verdana', arial, sans-serif;
-  font-size: 90%;
+  font-size: 60%;
   font-weight: normal;
 }
 

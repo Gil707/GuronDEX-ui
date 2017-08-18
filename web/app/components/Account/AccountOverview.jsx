@@ -44,6 +44,7 @@ class AccountOverview extends React.Component {
                 "BTS",
                 "USD",
                 "CNY",
+                "RUBLE",
                 "OPEN.BTC",
                 "OPEN.USDT",
                 "OPEN.ETH",
