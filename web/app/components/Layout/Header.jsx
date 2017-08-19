@@ -21,7 +21,7 @@ import notify from "actions/NotificationActions";
 import IntlActions from "actions/IntlActions";
 import AccountImage from "../Account/AccountImage";
 
-var logo = require("assets/logo-ico-blue.png");
+var logo = require("assets/logo.png");
 
 const FlagImage = ({flag, width = 20, height = 20}) => {
     return <img height={height} width={width} src={"language-dropdown/" + flag.toUpperCase() + ".png"} />;
@@ -172,21 +172,10 @@ class Header extends React.Component {
         let guronDropDown =
             <ActionSheet>
                 <ActionSheet.Button title="">
-                    <a style={{padding: "1rem", border: "none"}} className="button">
-                        &nbsp;Guron services&nbsp;
-                        <Icon className="icon-14px" name="chevron-down"/>
+                    <a href="http://gurondex.io" style={{paddingTop: 12, padding: "1rem", border: "none"}} className="button">
+                        &nbsp;GuronDEX&nbsp;
                     </a>
                 </ActionSheet.Button>
-                <ActionSheet.Content >
-                    <ul className="no-first-element-top-border">
-                        <li>
-                            <a href="https://www.guron.biz">Delivery & Logistics</a>
-                        </li>
-                        <li>
-                            <a href="https://www.guronechager.com">Currency exchange</a>
-                        </li>
-                    </ul>
-                </ActionSheet.Content>
             </ActionSheet>;
 
         let dashboard = (
@@ -349,11 +338,8 @@ class Header extends React.Component {
                         {!(currentAccount || myAccounts.length) ? <li><a className={cnames({active: active.indexOf("explorer") !== -1})} onClick={this._onNavigate.bind(this, "/explorer")}><Translate component="span" content="header.explorer" /></a></li> : null}
                         <li>{tradeLink}</li>
                         {enableDepositWithdraw && currentAccount && myAccounts.indexOf(currentAccount) !== -1 ? <li><Link to={"/deposit-withdraw/"} activeClassName="active"><Translate content="account.deposit_withdraw"/></Link></li> : null}
+                        <li>{guronDropDown}</li>
                     </ul>
-                </div>
-
-                <div align ="left" className="grp-menu-item overflow-visible account-drop-down">
-                    {guron}
                 </div>
 
                 <div className="grid-block show-for-medium shrink">
