@@ -28,6 +28,7 @@ import AccountOrders from "./components/Account/AccountOrders";
 import ExchangeContainer from "./components/Exchange/ExchangeContainer";
 import MarketsContainer from "./components/Exchange/MarketsContainer";
 import Transfer from "./components/Transfer/Transfer";
+// import Exchanger from "./components/Exchanger/Exchanger";
 import SettingsContainer from "./components/Settings/SettingsContainer";
 import BlockContainer from "./components/Blockchain/BlockContainer";
 import AssetContainer from "./components/Blockchain/AssetContainer";

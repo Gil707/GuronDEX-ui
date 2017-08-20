@@ -1,4 +1,4 @@
-import React from "react";
+ import React from "react";
 import BalanceComponent from "../Utility/BalanceComponent";
 import AccountActions from "actions/AccountActions";
 import Translate from "react-translate-component";
