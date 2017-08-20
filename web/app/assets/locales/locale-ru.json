@@ -20,6 +20,7 @@
     "dashboard":"Инфопанель",
     "explorer":"Обозреватель",
     "exchange":"Биржа",
+    "exchanger": "Обменник",
     "payments":"Отправить",
     "logout":"Выйти",
     "settings":"Настройки",

@@ -19,6 +19,7 @@
     "dashboard": "概览",
     "explorer": "浏览",
     "exchange": "交易",
+    "exchanger": "Exchanger",
     "payments": "转账",
     "logout": "注销",
     "settings": "设置",
