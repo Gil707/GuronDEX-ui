@@ -352,6 +352,10 @@
     "newer": "Daha yeni",
     "older": "Daha eski"
   },
+  "exchanger":{
+    "header":"Exchange details",
+    "description": "Exchange is powered by GuronDEX exchager. Please send bitRUBLE to recieve bitCNY"
+  },
   "transfer": {
     "from": "Gönderen",
     "pay_from": "Ödeyen hesap",

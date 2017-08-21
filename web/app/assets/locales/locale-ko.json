@@ -202,6 +202,10 @@
     "newer": "이전",
     "older": "다음"
   },
+  "exchanger":{
+    "header":"Exchange details",
+    "description": "Exchange is powered by GuronDEX exchager. Please send bitRUBLE to recieve bitCNY"
+  },
   "transfer": {
     "from": "보내는 사람",
     "pay_from": "전송받음",

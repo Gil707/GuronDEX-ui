@@ -359,6 +359,10 @@
     "newer":"Новые",
     "older":"Предыдущие"
   },
+  "exchanger":{
+    "header":"Детали обмена",
+    "description": "Обмен реализован при помощи GuronDEX. Пожалуйста отправьте bitRUBLE для полуения bitCNY"
+  },
   "transfer":{
     "header":"Детали транзакции",
     "from":"От",

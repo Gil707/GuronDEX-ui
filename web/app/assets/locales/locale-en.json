@@ -359,6 +359,10 @@
     "newer": "Newer",
     "older": "Older"
   },
+  "exchanger":{
+    "header":"Exchange details",
+    "description": "Exchange is powered by GuronDEX exchager. Please send bitRUBLE to recieve bitCNY"
+  },
   "transfer": {
     "header": "Transfer details",
     "from": "From",

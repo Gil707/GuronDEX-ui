@@ -202,6 +202,10 @@
     "newer": "Más reciente",
     "older": "Anterior"
   },
+  "exchanger":{
+    "header":"Exchange details",
+    "description": "Exchange is powered by GuronDEX exchager. Please send bitRUBLE to recieve bitCNY"
+  },
   "transfer": {
     "from": "Desde",
     "pay_from": "Pagar Desde",
@@ -383,6 +387,7 @@
       "override_transfer": "Anular transferencia"
     }
   },
+
   "explorer": {
     "accounts": {
       "title": "Cuentas"

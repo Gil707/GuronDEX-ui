@@ -349,6 +349,10 @@
     "bittrex_scam": "注意：这个账户不是交易所 Bittrex 的存款账户，请发送至 bittrex-deposit。",
     "other_scam": "这个账户不是已知的官方账号，请反复核实后进行转账操作。"
   },
+  "exchanger":{
+    "header":"Exchange details",
+    "description": "Exchange is powered by GuronDEX exchager. Please send bitRUBLE to recieve bitCNY"
+  },
   "transfer": {
     "from": "来自",
     "amount": "金额",

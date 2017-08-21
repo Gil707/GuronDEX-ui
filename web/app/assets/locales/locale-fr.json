@@ -168,6 +168,10 @@
     "settle": "Settle",
     "other_scam": "This account is not known to be an official account, please verify the destination before transferring"
   },
+  "exchanger":{
+    "header":"Exchange details",
+    "description": "Exchange is powered by GuronDEX exchager. Please send bitRUBLE to recieve bitCNY"
+  },
   "transfer": {
     "from": "De",
     "amount": "Montant",
