@@ -407,6 +407,7 @@ class Exchanger extends React.Component {
 
                         {/*  F E E   */}
                         <div className={"content-block transfer-input fee-row" + (this.state.propose ? " proposal" : "")}>
+                            <div>
                             <AmountSelector
                                 refCallback={this.setNestedRef.bind(this)}
                                 label="transfer.fee"
@@ -417,7 +418,10 @@ class Exchanger extends React.Component {
                                 assets={fee_asset_types}
                                 tabIndex={tabIndex++}
                             />
+                            </div>
+                            <div><br />
                             {propose ?
+
                                 <button className={submitButtonClass} type="submit" value="Submit" tabIndex={tabIndex++}>
                                     <Translate component="span" content="propose" />
                                 </button> :
@@ -425,6 +429,7 @@ class Exchanger extends React.Component {
                                     <Translate component="span" content="transfer.send" />
                                 </button>
                             }
+                            </div>
                         </div>
 
                         {/* P R O P O S E   F R O M
@@ -439,7 +444,6 @@ class Exchanger extends React.Component {
                                     onChange={this.onProposeAccount.bind(this)}
                                     tabIndex={tabIndex++}
                                 />
-                                <p></p><p></p>
                             </div>:null}
 
 
