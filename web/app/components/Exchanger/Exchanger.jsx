@@ -48,7 +48,6 @@ class Exchanger extends React.Component {
             from_account: null,
             to_account: null,
             amount: "",
-            recieved: 0,
             recieved_curr: "bitCNY",
             asset_id: null,
             asset: null,
@@ -58,7 +57,6 @@ class Exchanger extends React.Component {
             propose_account: "",
             feeAsset: null,
             fee_asset_id: "1.3.0",
-            course: 8.87
         };
     };
 
@@ -122,16 +120,21 @@ class Exchanger extends React.Component {
     }
 
     onAmountChanged({amount, asset}) {
+
+        var cssr = null;
+
         if (!asset) {
             return;
         } else {
+
+            cssr = this.getCourse(asset.get("id"));
+
             this.setState({amount, asset,
-                recieved: amount / this.state.course,
                 asset_id: asset.get("id"),
-                memo: ("Курс = ".concat(this.state.course).concat(" Перевод: ").concat(Math.round(this.state.recieved*100)/100).concat( " bitCNY")),
-                error: null});
+                error: null,
+                memo: ("Курс = ".concat(cssr).concat(" Перевод: ").concat(Math.round((amount / cssr)*100)/100).concat( " bitCNY").concat(" Заказ №: "))});
+            }
             this.onToAccountChanged.bind(this);
-        }
     }
 
     onFeeChanged({asset}) {
@@ -200,9 +203,18 @@ class Exchanger extends React.Component {
         }
     }
 
-    getCourse() {
+    getCourse(val) {
 
-        return this.state.course;
+        let value = "";
+
+        switch (val) {
+            case "1.3.113": value = 1; break
+            case "1.3.1325": value = 8.87; break
+            // case "1.3.1325": value = "bitRUBLE"; break
+            // case "1.3.0": value = "CNY"; break
+        }
+
+        return value;
     }
 
     getCurrVal(val) {
@@ -223,7 +235,7 @@ class Exchanger extends React.Component {
 
         const { from_account, from_error } = state;
 
-        let asset_types = ["1.3.1325"], fee_asset_types = [];
+        let asset_types = ["1.3.113", "1.3.1325"], fee_asset_types = [];
 
         if (!(from_account && from_account.get("balances") && !from_error)) {
             return {asset_types, fee_asset_types};
@@ -334,7 +346,7 @@ class Exchanger extends React.Component {
 
                     <form style={{paddingBottom: 20, overflow: "visible"}} className="grid-content small-12 medium-6 large-5 large-offset-1 full-width-content" onSubmit={this.onSubmit.bind(this)} noValidate>
 
-                        <Translate content="exchanger.header" component="h2" />
+                        <Translate content="exchanger.header" component="h3" />
                         {/*  F R O M  */}
                         <div className="content-block">
                             <AccountSelector label="transfer.from" ref="from"
@@ -363,7 +375,8 @@ class Exchanger extends React.Component {
                         </div>
                         {/*  T O  */}
                         <div>
-                            <Translate content="exchanger.description" component="h4" />
+                            <Translate content="exchanger.description" component="h5" />
+                            <Translate content="exchanger.option" class="gurondex-option" component="h6" />
                             <div><Translate content="transfer.to" /> <b>{to_name}</b></div>
                         </div>
 
