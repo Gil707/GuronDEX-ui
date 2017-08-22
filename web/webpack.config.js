@@ -9,7 +9,6 @@ require("es6-promise").polyfill();
 var root_dir = path.resolve(__dirname);
 
 module.exports = function(env) {
-
     if (!env.profile) {
         console.log("env:", env);
     }
@@ -125,12 +124,12 @@ module.exports = function(env) {
         entry: {
             // vendor: ["react", "react-dom", "highcharts/highstock", "bitsharesjs", "lodash"],
             app: env.prod ?
-            path.resolve(root_dir, "app/Main.js") :
-            [
-                "react-hot-loader/patch",
-                "webpack-hot-middleware/client",
-                path.resolve(root_dir, "app/Main-dev.js")
-            ]
+                path.resolve(root_dir, "app/Main.js") :
+                [
+                    "react-hot-loader/patch",
+                    "webpack-hot-middleware/client",
+                    path.resolve(root_dir, "app/Main-dev.js")
+                ]
         },
         output: {
             publicPath: env.prod ? "" : "/",
@@ -141,9 +140,6 @@ module.exports = function(env) {
         },
         devtool: env.prod ? "cheap-module-source-map" : "eval",
         module: {
-            // node: {
-            //     fs: "empty"
-            // },
             rules: [
                 {
                     test: /\.jsx$/,

@@ -13,8 +13,5 @@
   "devDependencies": {
     "coffee-script": "^1.12.2",
     "bitsharesjs": "^0.4.10"
-  },
-  "dependencies": {
-    "filereader": "latest"
   }
 }
