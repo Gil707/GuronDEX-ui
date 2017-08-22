@@ -361,7 +361,8 @@
   },
   "exchanger":{
     "header":"Exchange details",
-    "description": "Exchange is powered by GuronDEX exchager. Please send bitRUBLE to recieve bitCNY"
+    "description": "You can pay for the order in bitCNY or exchange bitRUBLE with the subsequent transfer of bitCNY at the rate below. If you pay the order please quote the number in the note!",
+    "option": "The exchange is realized by GuronDEX. Please send bitRUBLE to get bitCNY."
   },
   "transfer": {
     "header": "Transfer details",

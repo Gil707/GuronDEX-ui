@@ -205,6 +205,10 @@ class Exchanger extends React.Component {
 
     getCourse(val) {
 
+        // var request = require('request');
+        // var cheerio = require('cheerio');
+        // var fs = require('fs');
+
         let value = "";
 
         switch (val) {
