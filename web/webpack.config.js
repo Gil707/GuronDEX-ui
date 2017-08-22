@@ -9,6 +9,7 @@ require("es6-promise").polyfill();
 var root_dir = path.resolve(__dirname);
 
 module.exports = function(env) {
+
     if (!env.profile) {
         console.log("env:", env);
     }
@@ -140,6 +141,9 @@ module.exports = function(env) {
         },
         devtool: env.prod ? "cheap-module-source-map" : "eval",
         module: {
+            // node: {
+            //     fs: "empty"
+            // },
             rules: [
                 {
                     test: /\.jsx$/,

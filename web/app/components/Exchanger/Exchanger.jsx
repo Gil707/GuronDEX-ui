@@ -16,6 +16,7 @@ import {connect} from "alt-react";
 
 class Exchanger extends React.Component {
 
+
     constructor(props) {
         super(props);
         this.state = Exchanger.getInitialState();
@@ -43,11 +44,12 @@ class Exchanger extends React.Component {
     static getInitialState() {
         return {
             from_name: "",
-            to_name: "guron-dex",
+            to_name: "porco-rosso",
             from_account: null,
             to_account: null,
             amount: "",
-            recieved: null,
+            recieved: 0,
+            recieved_curr: "bitCNY",
             asset_id: null,
             asset: null,
             memo: "",
@@ -55,7 +57,8 @@ class Exchanger extends React.Component {
             propose: false,
             propose_account: "",
             feeAsset: null,
-            fee_asset_id: "1.3.0"
+            fee_asset_id: "1.3.0",
+            course: 8.87
         };
     };
 
@@ -122,7 +125,12 @@ class Exchanger extends React.Component {
         if (!asset) {
             return;
         } else {
-            this.setState({amount, asset, recieved: amount * 8.87, asset_id: asset.get("id"), error: null});
+            this.setState({amount, asset,
+                recieved: amount / this.state.course,
+                asset_id: asset.get("id"),
+                memo: ("Курс = ".concat(this.state.course).concat(" Перевод: ").concat(Math.round(this.state.recieved*100)/100).concat( " bitCNY")),
+                error: null});
+            this.onToAccountChanged.bind(this);
         }
     }
 
@@ -192,20 +200,41 @@ class Exchanger extends React.Component {
         }
     }
 
+    getCourse() {
+
+        return this.state.course;
+    }
+
+    getCurrVal(val) {
+        let value = "";
+
+        switch (val) {
+            case "1.3.113": value = "bitCNY"; break
+            // case "1.3.1325": value = "bitRUBLE"; break
+            // case "1.3.0": value = "CNY"; break
+        }
+
+        return value;
+    }
+
     _getAvailableAssets(state = this.state) {
+
+        // CNY - 1.3.113
+
         const { from_account, from_error } = state;
-        let asset_types = [], fee_asset_types = [];
+
+        let asset_types = ["1.3.1325"], fee_asset_types = [];
+
         if (!(from_account && from_account.get("balances") && !from_error)) {
             return {asset_types, fee_asset_types};
         }
         let account_balances = state.from_account.get("balances").toJS();
-        asset_types = Object.keys(account_balances).sort(utils.sortID);
         fee_asset_types = Object.keys(account_balances).sort(utils.sortID);
+
         for (let key in account_balances) {
             let asset = ChainStore.getObject(key);
             let balanceObject = ChainStore.getObject(account_balances[key]);
             if (balanceObject && balanceObject.get("balance") === 0) {
-                asset_types.splice(asset_types.indexOf(key), 1);
                 if (fee_asset_types.indexOf(key) !== -1) {
                     fee_asset_types.splice(fee_asset_types.indexOf(key), 1);
                 }
@@ -233,6 +262,9 @@ class Exchanger extends React.Component {
 
 
     render() {
+
+        this.getCourse();
+
         let from_error = null;
         let {propose, from_account, to_account, asset, asset_id, propose_account,
             amount, error, to_name, from_name, memo, feeAsset, fee_asset_id} = this.state;
@@ -318,10 +350,23 @@ class Exchanger extends React.Component {
                             />
                         </div>
                         {/*  T O  */}
+                        <div className="hidden-content-block">
+                            <AccountSelector
+                                label="transfer.to"
+                                accountName={to_name}
+                                onChange={this.toChanged.bind(this)}
+                                onAccountChanged={this.onToAccountChanged.bind(this)}
+                                account={to_name}
+                                size={60}
+                                tabIndex={tabIndex++}
+                            />
+                        </div>
+                        {/*  T O  */}
                         <div>
                             <Translate content="exchanger.description" component="h4" />
                             <div><Translate content="transfer.to" /> <b>{to_name}</b></div>
                         </div>
+
                         {/*<div className="content-block">*/}
                             {/*<AccountSelector*/}
                                 {/*label="transfer.to"*/}
@@ -346,19 +391,11 @@ class Exchanger extends React.Component {
                                 tabIndex={tabIndex++}
                             />
                         </div>
-                        {/*  C A L C U L A T O R   */}
-                            <div>
-                                <p>Вы получите = {this.state.recieved} bit CNY</p>
-                                <p>Asset_types = asset_types}</p>
-                                <p>Asset_types[0] = {asset_types[0]}</p>
-                                <p>Asset_id = {asset_id}</p>
-                                <p>Asset = {asset}</p>
-                            </div>
                         {/*  M E M O  */}
                         <div className="content-block transfer-input">
                             {memo && memo.length ? <label className="right-label">{memo.length}</label> : null}
                             <Translate className="left-label" component="label" content="transfer.memo"/>
-                            <textarea style={{marginBottom: 0}} rows="1" value={memo} tabIndex={tabIndex++} onChange={this.onMemoChanged.bind(this)} />
+                            <textarea style={{marginBottom: 0}} rows="1" value={this.state.memo} tabIndex={tabIndex++} onChange={this.onMemoChanged.bind(this)} />
                             {/* warning */}
                             { this.state.propose ?
                                 <div className="error-area" style={{position: "absolute"}}>
@@ -402,12 +439,14 @@ class Exchanger extends React.Component {
                                     onChange={this.onProposeAccount.bind(this)}
                                     tabIndex={tabIndex++}
                                 />
+                                <p></p><p></p>
                             </div>:null}
 
 
                         {/*  S E N D  B U T T O N  */}
                         {error ? <div className="content-block has-error">{error}</div> : null}
                         <div>
+
                             {propose ?
                                 <span>
                                 <button className=" button" onClick={this.onPropose.bind(this, false)} tabIndex={tabIndex++}>

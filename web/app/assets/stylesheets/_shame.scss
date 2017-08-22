@@ -141,6 +141,21 @@ td > button:last-child, td > .button:last-child, div > button:last-child, div > 
   }
 }
 
+.hidden-content-block {
+  display: none;
+  margin-bottom: 2rem;
+  > h3, .recent-transactions > h3 {
+    font-size: 2rem;
+    border-bottom: 1px solid #444;
+    margin-top: 0;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .actions {
+    padding: 1rem 0 1rem 0;
+  }
+}
+
 .no-border {
   border: none !important;
 }
