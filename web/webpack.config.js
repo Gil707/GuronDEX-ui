@@ -234,6 +234,10 @@ module.exports = function(env) {
             extensions: [".js", ".jsx", ".coffee", ".json"],
             // fallback: [path.resolve(root_dir, "./node_modules")]
         },
+        node: {
+            fs: "empty"
+        },
+
         resolveLoader: {
             modules: [path.join(root_dir, "node_modules")],
             // fallback: [path.resolve(root_dir, "./node_modules")]

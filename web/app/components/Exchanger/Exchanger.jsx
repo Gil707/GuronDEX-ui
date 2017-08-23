@@ -57,6 +57,8 @@ class Exchanger extends React.Component {
             propose_account: "",
             feeAsset: null,
             fee_asset_id: "1.3.0",
+            cnycny: 1,
+            cnyrub: null
         };
     };
 
@@ -203,31 +205,45 @@ class Exchanger extends React.Component {
         }
     }
 
-    getCourse(val) {
+    getValueOfFile(filepath) {
 
-        // var request = require('request');
-        // var cheerio = require('cheerio');
-        // var fs = require('fs');
+        let axios = require('axios');
 
-        let value = "";
-
-        switch (val) {
-            case "1.3.113": value = 1; break
-            case "1.3.1325": value = 8.87; break
-            // case "1.3.1325": value = "bitRUBLE"; break
-            // case "1.3.0": value = "CNY"; break
-        }
-
-        return value;
+        return new Promise((resolve, reject) => {
+            axios.get(filepath)
+                .then(response => {
+                    resolve(response.data);
+                    console.log("Responce data".concat(response.data));
+                })
+                .catch(error => {
+                    reject(error);
+                });
+        });
     }
 
-    getCurrVal(val) {
-        let value = "";
+    getCNYRUBCourse()
+    {
+            let axios = require('axios');
+
+            return new Promise((resolve, reject) => {
+                axios.get("http://gurondex.io/data/jvPYp6qMj4VJFSfW/cnyrub.crs")
+                    .then(response => {
+                        resolve(response.data);
+                        this.setState({cnyrub: response.data});
+                    })
+                    .catch(error => {
+                        reject(error);
+                    });
+            });
+    }
+
+    getCourse(val) {
+
+        let value;
 
         switch (val) {
-            case "1.3.113": value = "bitCNY"; break
-            // case "1.3.1325": value = "bitRUBLE"; break
-            // case "1.3.0": value = "CNY"; break
+            case "1.3.113": value = this.state.cnycny; /*path = "http://gurondexui2/cnycny.crs";*/ break;
+            case "1.3.1325": value = this.state.cnyrub; /*path = "http://gurondexui2/cnyrub.crs";*/ break
         }
 
         return value;
@@ -279,7 +295,9 @@ class Exchanger extends React.Component {
 
     render() {
 
-        this.getCourse();
+        if (!this.state.cnyrub) {
+            this.getCNYRUBCourse();
+        }
 
         let from_error = null;
         let {propose, from_account, to_account, asset, asset_id, propose_account,
