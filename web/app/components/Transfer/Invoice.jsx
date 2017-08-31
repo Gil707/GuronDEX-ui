@@ -33,9 +33,10 @@ class Invoice extends React.Component {
         super(props);
         this.state = {
             invoice: null,
-            pay_from_name: null,
+            pay_from_name: 'gil707',
             pay_from_account: null,
-            error: null
+            error: null,
+            link: null
         };
         this.onBroadcastAndConfirm = this.onBroadcastAndConfirm.bind(this);
     }
@@ -78,6 +79,11 @@ class Invoice extends React.Component {
             if(this.state.invoice.callback) {
                 let trx =  confirm_store_state.broadcasted_transaction;
                 let url = `${this.state.invoice.callback}?block=${trx.ref_block_num}&trx=${trx.id()}`;
+
+                this.setState({
+                    link: trx
+                });
+
                 window.location.href = url;
             }
         }
@@ -89,6 +95,7 @@ class Invoice extends React.Component {
         let precision = utils.get_asset_precision(asset.get("precision"));
         let amount = this.getTotal(this.state.invoice.line_items);
         let to_account = ChainStore.getAccount(this.state.invoice.to);
+
         if(!to_account) {
             NotificationActions.error(`Account ${this.state.invoice.to} not found`);
             return;
@@ -150,6 +157,7 @@ class Invoice extends React.Component {
                         <br/>
                         <h3>Pay Invoice</h3>
                         <h4>{invoice.memo}</h4>
+                        <h5>Link is {this.state.link}</h5>
                         <br/>
                         <div>
                             <AccountInfo title={invoice.to_label} account={invoice.to} image_size={{height: 80, width: 80}}/>

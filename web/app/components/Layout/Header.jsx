@@ -172,7 +172,7 @@ class Header extends React.Component {
         let guronDropDown =
             <ActionSheet>
                 <ActionSheet.Button title="">
-                    <a href="http://gurondex.io" style={{paddingTop: 12, padding: "1rem", border: "none"}} className="button">
+                    <a href="http://gurondex.io" style={{marginTop: 8, padding: "1rem", border: "none"}} className="button">
                         &nbsp;GuronDEX&nbsp;
                     </a>
                 </ActionSheet.Button>

@@ -36,7 +36,7 @@ class SettingsStore {
         this.defaultSettings = Immutable.Map({
             locale: "ru",
             apiServer: settingsAPIs.DEFAULT_WS_NODE,
-            faucet_address: settingsAPIs.DEFAULT_FAUCET,
+            faucet_address: "http://faucet.gurondex.io",
             unit: "RUBLE",
             showSettles: false,
             showAssetPercent: false,
