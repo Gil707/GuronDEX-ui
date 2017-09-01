@@ -635,7 +635,7 @@ class Chat extends React.Component {
                     height: !docked ? 35 : null
                 }}
             >
-                {!showChat ?
+                {showChat ?
                 <div>Chat is disabled</div> : null}
 
                 <div style={chatStyle} className={"chatbox"}>
