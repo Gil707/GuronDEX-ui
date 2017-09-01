@@ -14,7 +14,8 @@
     "dashboard": "전체보기",
     "explorer": "탐색기",
     "exchange": "거래소",
-    "exchanger": "Exchanger/Pay",
+    "exchanger": "Exchanger",
+    "orderpay": "Pay",
     "payments": "전송",
     "logout": "로그아웃",
     "settings": "설정",
@@ -203,9 +204,16 @@
     "older": "다음"
   },
   "exchanger":{
-    "header":"Exchange details",
-    "description": "You can pay for the order in bitCNY or exchange bitRUBLE with the subsequent transfer of bitCNY at the rate below. If you pay the order please quote the number in the note!",
-    "option": "The exchange is realized by GuronDEX. Please send bitRUBLE to get bitCNY."
+    "header":"Exchanger details",
+    "description": "Here you can exchange your bitRUBLE for bitCNY at the rate below. bitCNY You will get back to the wallet from which you send bitRUBLE!",
+    "option": "The exchange is realized by GuronDEX. Please send bitRUBLE to get bitCNY.",
+    "cnyrub": "Exchange rate bitCNY to bitRUBLE: ",
+    "throw": "Throw: "
+  },
+  "orderpay":{
+    "header":"Payment details",
+    "description": "You can pay for the order of bitCNY or bitRUBLE, in case of payment for bitRUBLE the amount will be automatically recalculated at the rate lower in bitCNY. When paying for the order, please indicate the number in the note!",
+    "option": "Payment is realized by GuronDEX. Please send bitCNY (or bitRUBLE) to pay for the order."
   },
   "transfer": {
     "from": "보내는 사람",

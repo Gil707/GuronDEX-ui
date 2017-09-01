@@ -29,6 +29,7 @@ import ExchangeContainer from "./components/Exchange/ExchangeContainer";
 import MarketsContainer from "./components/Exchange/MarketsContainer";
 import Transfer from "./components/Transfer/Transfer";
 import Exchanger from "./components/Exchanger/Exchanger";
+import Orderpay from "./components/Exchanger/Orderpay";
 import SettingsContainer from "./components/Settings/SettingsContainer";
 import BlockContainer from "./components/Blockchain/BlockContainer";
 import AssetContainer from "./components/Blockchain/AssetContainer";
@@ -88,6 +89,7 @@ const routes = (
 
         <Route path="transfer" component={Transfer}/>
         <Route path="exchanger" component={Exchanger}/>
+        <Route path="orderpay" component={Orderpay}/>
 
         <Route path="invoice/:data" component={Invoice} />
         <Route path="explorer/markets" component={MarketsContainer} />

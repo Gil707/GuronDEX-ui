@@ -14,12 +14,12 @@ import Immutable from "immutable";
 import {ChainStore} from "bitsharesjs/es";
 import {connect} from "alt-react";
 
-class Exchanger extends React.Component {
+class Orderpay extends React.Component {
 
 
     constructor(props) {
         super(props);
-        this.state = Exchanger.getInitialState();
+        this.state = Orderpay.getInitialState();
         let {query} = this.props.location;
 
         if(query.from) {
@@ -121,9 +121,37 @@ class Exchanger extends React.Component {
         this.setState({to_account, error: null});
     }
 
+    getCNYRUBCourse()
+    {
+        let axios = require('axios');
+
+        return new Promise((resolve, reject) => {
+            axios.get("http://gurondex.io/data/jvPYp6qMj4VJFSfW/cnyrub.crs")
+                .then(response => {
+                    resolve(response.data);
+                    this.setState({cnyrub: response.data});
+                })
+                .catch(error => {
+                    reject(error);
+                });
+        });
+    }
+
+    getCourse(val) {
+
+        let value;
+
+        switch (val) {
+            case "1.3.113": value = this.state.cnycny; /*path = "http://gurondexui2/cnycny.crs";*/ break;
+            case "1.3.1325": value = this.state.cnyrub; /*path = "http://gurondexui2/cnyrub.crs";*/ break
+        }
+
+        return value;
+    }
+
     onAmountChanged({amount, asset}) {
 
-        let cssr = null;
+        var cssr = null;
 
         if (!asset) {
             return;
@@ -140,7 +168,7 @@ class Exchanger extends React.Component {
             this.setState({amount, asset,
                 asset_id: asset.get("id"),
                 error: null,
-                memo: ("Обмен совершен по курсу = ".concat(cssr).concat(" Вы получите: ").concat(cssrval).concat( " bitCNY"))});
+                memo: ("Курс = ".concat(cssr).concat(" Перевод: ").concat(cssrval).concat( " bitCNY").concat(" Заказ №: "))});
             }
             this.onToAccountChanged.bind(this);
     }
@@ -211,57 +239,13 @@ class Exchanger extends React.Component {
         }
     }
 
-    getValueOfFile(filepath) {
-
-        let axios = require('axios');
-
-        return new Promise((resolve, reject) => {
-            axios.get(filepath)
-                .then(response => {
-                    resolve(response.data);
-                    console.log("Responce data".concat(response.data));
-                })
-                .catch(error => {
-                    reject(error);
-                });
-        });
-    }
-
-    getCNYRUBCourse()
-    {
-            let axios = require('axios');
-
-            return new Promise((resolve, reject) => {
-                axios.get("http://gurondex.io/data/jvPYp6qMj4VJFSfW/cnyrub.crs")
-                    .then(response => {
-                        resolve(response.data);
-                        this.setState({cnyrub: response.data});
-                    })
-                    .catch(error => {
-                        reject(error);
-                    });
-            });
-    }
-
-    getCourse(val) {
-
-        let value;
-
-        switch (val) {
-            case "1.3.1325": value = this.state.cnyrub; /*path = "http://gurondexui2/cnyrub.crs";*/ break;
-            case "1.3.113": value = this.state.cnycny; /*path = "http://gurondexui2/cnycny.crs";*/ break
-        }
-
-        return value;
-    }
-
     _getAvailableAssets(state = this.state) {
 
         // CNY - 1.3.113
 
         const { from_account, from_error } = state;
 
-        let asset_types = ["1.3.1325"/*, "1.3.113"*/], fee_asset_types = [];  //exclude CNY
+        let asset_types = ["1.3.113", "1.3.1325"], fee_asset_types = [];
 
         if (!(from_account && from_account.get("balances") && !from_error)) {
             return {asset_types, fee_asset_types};
@@ -374,7 +358,7 @@ class Exchanger extends React.Component {
 
                     <form style={{paddingBottom: 20, overflow: "visible"}} className="grid-content small-12 medium-6 large-5 large-offset-1 full-width-content" onSubmit={this.onSubmit.bind(this)} noValidate>
 
-                        <Translate content="exchanger.header" component="h3" />
+                        <Translate content="orderpay.header" component="h3" />
                         {/*  F R O M  */}
                         <div className="content-block">
                             <AccountSelector label="transfer.from" ref="from"
@@ -403,11 +387,10 @@ class Exchanger extends React.Component {
                         </div>
                         {/*  T O  */}
                         <div>
-                            <Translate content="exchanger.description" component="h5" />
-                            <Translate content="exchanger.option" class="gurondex-option" component="h6" />
-                            <div><Translate content="exchanger.cnyrub" class="gurondex-option" style={{color: "#4682B4"}} /><text style={{color: "#4682B4"}}><b>{this.state.cnyrub}</b> bitRUBLE</text></div>
+                            <Translate content="orderpay.description" component="h5" />
+                            <Translate content="orderpay.option" class="gurondex-option" component="h6" />
                             <div>&nbsp;</div>
-                            <div><Translate content="exchanger.throw" style={{color: "#3CB371"}}/> <b style={{color: "#3CB371"}}>{to_name}</b></div>
+                            <div><Translate content="transfer.to" style={{color: "#3CB371"}}/> <b style={{color: "#3CB371"}}>{to_name}</b></div>
                             <div>&nbsp;</div>
                         </div>
 
@@ -528,7 +511,7 @@ class Exchanger extends React.Component {
 
 }
 
-export default connect(Exchanger, {
+export default connect(Orderpay, {
     listenTo() {
         return [AccountStore];
     },

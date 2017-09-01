@@ -136,11 +136,11 @@ export default class SettingsEntry extends React.Component {
 
             case "faucet_address":
                 if (!selected) {
-                    value = "https://";
+                    value = "http://";
                 } else {
                     value = selected;
                 }
-                input = <input type="text" defaultValue={value} onChange={this.props.onChange.bind(this, setting)}/>;
+                input = <input type="text" defaultValue={value} onChange={this.props.onChange.bind(this, setting)} disabled />;
                 break;
 
             case "reset":

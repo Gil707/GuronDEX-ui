@@ -110,6 +110,10 @@ const routes = (
             System.import("components/Exchanger/Exchanger").then(loadRoute(cb)).catch(errorLoading);
         }}/>
 
+        <Route path="orderpay" getComponent={(location, cb) => {
+            System.import("components/Exchanger/Orderpay").then(loadRoute(cb)).catch(errorLoading);
+        }}/>
+
         <Route path="invoice/:data" getComponent={(location, cb) => {
             System.import("components/Transfer/Invoice").then(loadRoute(cb)).catch(errorLoading);
         }}/>
