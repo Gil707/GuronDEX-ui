@@ -31,7 +31,7 @@ addLocaleData(ru);
 
 class IntlStore {
     constructor() {
-        this.currentLocale = ss.has("settings_v3") ? ss.get("settings_v3").locale : "en";
+        this.currentLocale = ss.has("settings_v3") ? ss.get("settings_v3").locale : "ru";
 
         this.locales = ["en"];
         this.localesObject = {en: locale_en};
@@ -73,7 +73,7 @@ class IntlStore {
     }
 
     onClearSettings() {
-        this.onSwitchLocale({locale: "en"});
+        this.onSwitchLocale({locale: "ru"});
     }
 }
 
