@@ -4,6 +4,7 @@ import FormattedAsset from "../Utility/FormattedAsset";
 import AccountActions from "actions/AccountActions";
 import AccountSelector from "../Account/AccountSelector";
 import AccountInfo from "../Account/AccountInfo";
+import AccountStore from "stores/AccountStore";
 import BalanceComponent from "../Utility/BalanceComponent";
 import {ChainStore, FetchChainObjects} from "bitsharesjs/es";
 import NotificationActions from "actions/NotificationActions";
@@ -11,6 +12,7 @@ import TransactionConfirmStore from "stores/TransactionConfirmStore";
 import {decompress} from "lzma";
 import bs58 from "common/base58";
 import utils from "common/utils";
+import {withRouter} from "react-router";
 
 // invoice example:
 //{
@@ -33,12 +35,15 @@ class Invoice extends React.Component {
         super(props);
         this.state = {
             invoice: null,
-            pay_from_name: 'gil707',
+            pay_from_name: null,
             pay_from_account: null,
             error: null,
-            link: null
+            link: null,
+            fee_id: null
         };
         this.onBroadcastAndConfirm = this.onBroadcastAndConfirm.bind(this);
+
+
     }
 
     componentDidMount() {
@@ -105,12 +110,17 @@ class Invoice extends React.Component {
             to_account.get("id"),
             parseInt(amount * precision, 10),
             asset.get("id"),
-            this.state.invoice.memo
+            this.state.invoice.memo,
+            null,
+            this.state.fee_id
         ).then( () => {
                 TransactionConfirmStore.listen(this.onBroadcastAndConfirm);
+                this.props.router.push('http://localhost:8080');                //redirect
             }).catch( e => {
                 console.log( "error: ",e)
             } );
+
+
     }
 
     fromChanged(pay_from_name) {
@@ -126,6 +136,9 @@ class Invoice extends React.Component {
         if(this.state.error) return(<div><br/><h4 className="has-error text-center">{this.state.error}</h4></div>);
         if(!this.state.invoice) return null;
         if(!this.state.asset) return (<div><br/><h4 className="has-error text-center">Asset {this.state.invoice.currency} is not supported by this blockchain.</h4></div>);
+
+        let currentAccount = AccountStore.getState().currentAccount;
+        if (!this.state.pay_from_name) this.setState({pay_from_name: currentAccount});
 
         let invoice = this.state.invoice;
         let total_amount = this.getTotal(invoice.line_items);
@@ -149,6 +162,11 @@ class Invoice extends React.Component {
                 </tr>
             );
         });
+
+        if (!this.state.fee_id) {
+            this.setState({fee_id: invoice.fee_id});
+        }
+
         let payButtonClass = classNames("button", {disabled: !this.state.pay_from_account});
         return (
             <div className="grid-block vertical">
@@ -210,4 +228,4 @@ class Invoice extends React.Component {
     }
 }
 
-export default Invoice;
+export default withRouter(Invoice);

@@ -63,6 +63,7 @@ class MobileMenu extends React.Component {
                         <li>{linkToAccountOrDashboard}</li>
                         <li onClick={this.onClick}><Link to="transfer"><Translate content="header.payments"/></Link></li>
                         <li onClick={this.onClick}><Link to="exchanger"><Translate content="header.exchanger"/></Link></li>
+                        <li onClick={this.onClick}><Link to="orderpay"><Translate content="header.orderpay"/></Link></li>
                         {linkedAccounts.size === 0 ? null :
                           <li>{tradeLink}</li>}
                         {/*{(currentAccount || myAccounts.length) ? <li><a className={cnames({active: active.indexOf("exchanger") !== -1})} onClick={this._onNavigate.bind(this, "/exchanger")}><Translate component="span" content="header.exchanger" /></a></li> : null}*/}
