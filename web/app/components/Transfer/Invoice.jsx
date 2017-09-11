@@ -40,7 +40,7 @@ class Invoice extends React.Component {
             pay_from_account: null,
             error: null,
             link: null,
-            asset_id: null,
+            asset_id: null,         // default currency from invoice
             feeAsset: null
         };
         this.onBroadcastAndConfirm = this.onBroadcastAndConfirm.bind(this);
