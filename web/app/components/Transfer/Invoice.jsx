@@ -41,7 +41,8 @@ class Invoice extends React.Component {
             error: null,
             link: null,
             asset_id: null,         // default currency from invoice
-            feeAsset: null
+            feeAsset: null,
+            hashlink: null
         };
         this.onBroadcastAndConfirm = this.onBroadcastAndConfirm.bind(this);
 
@@ -116,8 +117,9 @@ class Invoice extends React.Component {
             null,
             this.state.feeAsset.get("id")
         ).then( () => {
+            let hs = this.state.invoice.memo.split('#');
                 TransactionConfirmStore.listen(this.onBroadcastAndConfirm);
-                this.props.router.push('http://localhost:8080');                //redirect
+                this.props.router.push(`http://guron-new/invoice/dex?r=${hs[1]}&hs=${this.state.invoice.hashlink}`);                //redirect
             }).catch( e => {
                 console.log( "error: ",e)
             } );
