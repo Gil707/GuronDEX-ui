@@ -1,5 +1,29 @@
 var numeral = require("numeral");
 
+numeral.register('locale', 'rudex', {
+    delimiters: {
+        thousands: '',
+        decimal: '.'
+    },
+    abbreviations: {
+        thousand: 'k',
+        million: 'm',
+        billion: 'b',
+        trillion: 't'
+    },
+    ordinal: function(number) {
+        var b = number % 10;
+        return (~~(number % 100 / 10) === 1) ? 'th' :
+            (b === 1) ? 'st' :
+                (b === 2) ? 'nd' :
+                    (b === 3) ? 'rd' : 'th';
+    },
+    currency: {
+        symbol: '$'
+    }
+});
+numeral.locale('rudex');
+
 let id_regex = /\b\d+\.\d+\.(\d+)\b/;
 
 import {ChainTypes} from "bitsharesjs/es";
@@ -78,9 +102,9 @@ var Utils = {
         if (amount < 10000) {
             return this.format_number(amount, 3);
         } else if (amount < 1000000) {
-            return (Math.round(amount / 10) / 100).toFixed(2) + "k";
+            return this.format_number(Math.round(amount / 10) / 100, 2) + "k";
         } else {
-            return (Math.round(amount / 10000) / 100).toFixed(2) + "M";
+            return this.format_number(Math.round(amount / 10000) / 100, 2) + "M";
         }
     },
 
@@ -252,7 +276,7 @@ var Utils = {
                 return
             let parts = value.split('.')
             // console.log( "split: ", parts )
-            n = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            n = parts[0];//.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             if( parts.length > 1 )
                 n += "." + parts[1]
             // console.log( "after: ",transfer.amount )
@@ -530,7 +554,7 @@ var Utils = {
         }
 
         let prefix = isBitAsset ? "bit" : toReplace[i] ? toReplace[i].toLowerCase() : null;
-        if (prefix === "open.") prefix = "";
+        //if (prefix === "open.") prefix = "";
 
         return {
             name,

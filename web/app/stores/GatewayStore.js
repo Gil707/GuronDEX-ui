@@ -34,10 +34,10 @@ class GatewayStore {
             coins.forEach(coin_type => coins_by_type[coin_type.coinType] = coin_type);
             bridgeCoins = bridgeCoins.filter(a => {
                 return a && coins_by_type[a.outputCoinType] && (
-                    wallets.indexOf(coins_by_type[a.outputCoinType].walletType) !== -1 && // Remove inactive wallets
-                    coins_by_type[a.outputCoinType].walletType === "bitshares2" && // Only use bitshares2 wallet types
-                    this.bridgeInputs.indexOf(a.inputCoinType) !== -1 // Only use coin types defined in bridgeInputs
-                );
+                        wallets.indexOf(coins_by_type[a.outputCoinType].walletType) !== -1 && // Remove inactive wallets
+                        coins_by_type[a.outputCoinType].walletType === "bitshares2" && // Only use bitshares2 wallet types
+                        this.bridgeInputs.indexOf(a.inputCoinType) !== -1 // Only use coin types defined in bridgeInputs
+                    );
             }).forEach(coin => {
                 this.bridgeCoins = this.bridgeCoins.setIn([coins_by_type[coin.outputCoinType].walletSymbol, coin.inputCoinType], Immutable.fromJS(coin));
             });

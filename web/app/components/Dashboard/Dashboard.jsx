@@ -41,6 +41,10 @@ class Dashboard extends React.Component {
                 ["BTS", "RUBLE"],
                 ["BTS", "OCT"],
                 ["BTS", "RUBLE"],
+                ["BTS", "PPY"],
+                ["BTS", "USD"],
+                ["BTS", "EUR"],
+                ["BTS", "CNY"],
                 ["BTS", "GOLD"],
                 ["BTS", "BLOCKPAY"],
                 ["BTS", "BTWTY"],
@@ -200,11 +204,13 @@ class Dashboard extends React.Component {
         // .sort(this._sortMarketsByVolume)
         .map(pair => {
             let isLowVolume = this.props.lowVolumeMarkets.get(pair[1] + "_" + pair[0]) || this.props.lowVolumeMarkets.get(pair[0] + "_" + pair[1]);
+            // HACK: Show all defined markets
+            isLowVolume = false;
             if (!isLowVolume) validMarkets++;
             let className = "";
-            if (validMarkets > 9) {
+            if (validMarkets > 15) {
                 className += ` show-for-${!accountCount ? "xlarge" : "large"}`;
-            } else if (validMarkets > 6) {
+            } else if (validMarkets > 12) {
                 className += ` show-for-${!accountCount ? "large" : "medium"}`;
             }
 
@@ -218,7 +224,7 @@ class Dashboard extends React.Component {
                     base={pair[1]}
                     invert={pair[2]}
                     isLowVolume={isLowVolume}
-                    hide={validMarkets > 20}
+                    hide={validMarkets > 21}
                 />
             );
         }).filter(a => !!a);

@@ -18,7 +18,7 @@ class WithdrawModal extends React.Component {
        receive_asset_name: React.PropTypes.string,
        receive_asset_symbol: React.PropTypes.string,
        memo_prefix: React.PropTypes.string
-   }
+   };
 
    constructor( props ) {
       super(props);
@@ -101,6 +101,6 @@ class WithdrawModal extends React.Component {
                </form>)
    }
 
-};
+}
 
 export default BindToChainState(WithdrawModal, {keep_updating:true});

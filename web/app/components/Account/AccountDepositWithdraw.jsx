@@ -1,5 +1,5 @@
 import React from "react";
-import { connect } from "alt-react";
+import {connect} from "alt-react";
 import accountUtils from "common/account_utils";
 import utils from "common/utils";
 import Translate from "react-translate-component";
@@ -14,9 +14,11 @@ import HelpContent from "../Utility/HelpContent";
 import AccountStore from "stores/AccountStore";
 import SettingsStore from "stores/SettingsStore";
 import SettingsActions from "actions/SettingsActions";
-import { Apis } from "bitsharesjs-ws";
-import { settingsAPIs } from "api/apiConfig";
+import {Apis} from "bitsharesjs-ws";
+import { settingsAPIs, blockTradesAPIs, rudexAPIs } from "api/apiConfig";
 import BitKapital from "../DepositWithdraw/BitKapital";
+import RuDexGateway from "../DepositWithdraw/rudex/RuDexGateway";
+import RuDexFiat from "../DepositWithdraw/rudex/RuDexFiat";
 import GatewayStore from "stores/GatewayStore";
 import GatewayActions from "actions/GatewayActions";
 import AccountImage from "../Account/AccountImage";
@@ -37,6 +39,7 @@ class AccountDepositWithdraw extends React.Component {
         this.state = {
             olService: props.viewSettings.get("olService", "gateway"),
             btService: props.viewSettings.get("btService", "bridge"),
+            rudexService: props.viewSettings.get("rudexService", "gateway"),
             metaService: props.viewSettings.get("metaService", "bridge"),
             activeService: props.viewSettings.get("activeService", 0)
         };
@@ -47,8 +50,10 @@ class AccountDepositWithdraw extends React.Component {
             nextProps.account !== this.props.account ||
             !utils.are_equal_shallow(nextProps.blockTradesBackedCoins, this.props.blockTradesBackedCoins) ||
             !utils.are_equal_shallow(nextProps.openLedgerBackedCoins, this.props.openLedgerBackedCoins) ||
+            !utils.are_equal_shallow(nextProps.rudexBackedCoins, this.props.rudexBackedCoins) ||
             nextState.olService !== this.state.olService ||
             nextState.btService !== this.state.btService ||
+            nextState.rudexService !== this.state.rudexService ||
             nextState.metaService !== this.state.metaService ||
             nextState.activeService !== this.state.activeService
         );
@@ -78,6 +83,16 @@ class AccountDepositWithdraw extends React.Component {
         });
     }
 
+    toggleRuDexService(service) {
+        this.setState({
+            rudexService: service
+        });
+
+        SettingsActions.changeViewSetting({
+            rudexService: service
+        });
+    }
+
     toggleMetaService(service) {
         this.setState({
             metaService: service
@@ -99,46 +114,50 @@ class AccountDepositWithdraw extends React.Component {
         });
     }
 
-    renderServices(blockTradesGatewayCoins, openLedgerGatewayCoins) {
-        //let services = ["Openledger (OPEN.X)", "BlockTrades (TRADE.X)", "Transwiser", "BitKapital"];
+    renderServices(openLedgerGatewayCoins, rudexGatewayCoins) {
+        //let services = ["Openledger (OPEN.X)", "BlockTrades (TRADE.X)", "Transwiser", "BitKapital", "RuDEX"];
         let serList = [];
-        let { account } = this.props;
-        let { olService, btService } = this.state;
+        let {account} = this.props;
+        let {olService, btService, rudexService} = this.state;
 
         serList.push({
             name: "Openledger (OPEN.X)",
             template: (
                 <div className="content-block">
-                        {/* <div className="float-right">
-                            <a href="https://www.ccedk.com/" target="__blank" rel="noopener noreferrer"><Translate content="gateway.website" /></a>
-                        </div> */}
-                        <div className="service-selector">
-                            <ul className="button-group segmented no-margin">
-                                <li onClick={this.toggleOLService.bind(this, "gateway")} className={olService === "gateway" ? "is-active" : ""}><a><Translate content="gateway.gateway" /></a></li>
-                                <li onClick={this.toggleOLService.bind(this, "fiat")} className={olService === "fiat" ? "is-active" : ""}><a>Fiat</a></li>
-                            </ul>
-                        </div>
+                    {/* <div className="float-right">
+                     <a href="https://www.ccedk.com/" target="__blank" rel="noopener noreferrer"><Translate content="gateway.website" /></a>
+                     </div> */}
+                    <div className="service-selector">
+                        <ul className="button-group segmented no-margin">
+                            <li onClick={this.toggleOLService.bind(this, "gateway")}
+                                className={olService === "gateway" ? "is-active" : ""}><a><Translate
+                                content="gateway.gateway"/></a></li>
+                            <li onClick={this.toggleOLService.bind(this, "fiat")}
+                                className={olService === "fiat" ? "is-active" : ""}><a>Fiat</a></li>
+                        </ul>
+                    </div>
 
-                        {olService === "gateway" && openLedgerGatewayCoins.length ?
+                    {olService === "gateway" && openLedgerGatewayCoins.length ?
                         <BlockTradesGateway
                             account={account}
                             coins={openLedgerGatewayCoins}
                             provider="openledger"
                         /> : null}
 
-                        {olService === "fiat" ?
+                    {olService === "fiat" ?
                         <div>
-                            <div style={{paddingBottom: 15}}><Translate component="h5" content="gateway.fiat_text" /></div>
+                            <div style={{paddingBottom: 15}}><Translate component="h5" content="gateway.fiat_text"/>
+                            </div>
 
                             <OpenLedgerFiatDepositWithdrawal
                                 rpc_url={settingsAPIs.RPC_URL}
                                 account={account}
-                                issuer_account="openledger-fiat" />
+                                issuer_account="openledger-fiat"/>
                             <OpenLedgerFiatTransactionHistory
                                 rpc_url={settingsAPIs.RPC_URL}
-                                account={account} />
+                                account={account}/>
                         </div> : null}
-                    </div>
+                </div>
             )
         });
 
@@ -146,17 +165,19 @@ class AccountDepositWithdraw extends React.Component {
             name: "BlockTrades (TRADE.X)",
             template: (
                 <div>
-                        <div className="content-block">
-                            {/* <div className="float-right"><a href="https://blocktrades.us" target="__blank" rel="noopener noreferrer"><Translate content="gateway.website" /></a></div> */}
+                    <div className="content-block">
+                        {/* <div className="float-right"><a href="https://blocktrades.us" target="__blank" rel="noopener noreferrer"><Translate content="gateway.website" /></a></div> */}
 
-                            <div className="service-selector">
-                                <ul className="button-group segmented no-margin">
-                                    <li onClick={this.toggleBTService.bind(this, "bridge")} className={btService === "bridge" ? "is-active" : ""}><a><Translate content="gateway.bridge" /></a></li>
-                                    <li onClick={this.toggleBTService.bind(this, "gateway")} className={btService === "gateway" ? "is-active" : ""}><a><Translate content="gateway.gateway" /></a></li>
-                                </ul>
-                            </div>
+                        <div className="service-selector">
+                            <ul className="button-group segmented no-margin">
+                                <li onClick={this.toggleBTService.bind(this, "bridge")}
+                                    className={btService === "bridge" ? "is-active" : ""}><a><Translate
+                                    content="gateway.bridge"/></a></li>
+                                {/* <li onClick={this.toggleBTService.bind(this, "gateway")} className={btService === "gateway" ? "is-active" : ""}><a><Translate content="gateway.gateway" /></a></li> */}
+                            </ul>
+                        </div>
 
-                            {btService === "bridge" ?
+                        {btService === "bridge" ?
                             <BlockTradesBridgeDepositRequest
                                 gateway="blocktrades"
                                 issuer_account="blocktrades"
@@ -172,50 +193,62 @@ class AccountDepositWithdraw extends React.Component {
                                 initial_conversion_estimated_input_amount="1000"
                             /> : null}
 
-                            {btService === "gateway" ?
+                        {btService === "gateway" ?
                             <div>
-                                <h4 className="txtlabel cancel">This cryptocurrency gateway is shutting down as it is rarely if ever used</h4>
-                                <p>Openledger's gateway continues to operate, and it offers more coins and a far more liquid trading environment. Note that we will be continuing the operation of our cryptocurrency bridge for quickly buying and selling cryptocurrency, since it is actively used by the Bitshares community.</p>
+                                <h4 className="txtlabel cancel">This cryptocurrency gateway is shutting down as it is
+                                    rarely if ever used</h4>
+                                <p>Openledger's gateway continues to operate, and it offers more coins and a far more
+                                    liquid trading environment. Note that we will be continuing the operation of our
+                                    cryptocurrency bridge for quickly buying and selling cryptocurrency, since it is
+                                    actively used by the Bitshares community.</p>
 
-                                <p>We'll be shutting down this gateway in stages. In the first stage, which has just begun, we've disabled deposits to the gateway. Inevitably, someone may still use one of their old deposit addresses, in which case we'll manually refund them when you contact us. <b>We request that if you hold any TRADE assets, you perform a withdrawal of those assets during this stage.</b></p>
+                                <p>We'll be shutting down this gateway in stages. In the first stage, which has just
+                                    begun, we've disabled deposits to the gateway. Inevitably, someone may still use one
+                                    of their old deposit addresses, in which case we'll manually refund them when you
+                                    contact us. <b>We request that if you hold any TRADE assets, you perform a
+                                        withdrawal of those assets during this stage.</b></p>
 
-                                <p>Eventually, we will also disable withdrawals as well, but we will leave in place a 1-1 market order on OPEN.BTC_TRADE.BTC for a while after that to allow users to exchange any remaining TRADE.BTC for OPEN.BTC. We will place similar orders for any other TRADE assets that remain outstanding after withdrawals are disabled.</p>
+                                <p>Eventually, we will also disable withdrawals as well, but we will leave in place a
+                                    1-1 market order on OPEN.BTC_TRADE.BTC for a while after that to allow users to
+                                    exchange any remaining TRADE.BTC for OPEN.BTC. We will place similar orders for any
+                                    other TRADE assets that remain outstanding after withdrawals are disabled.</p>
                             </div> : null}
-                        </div>
-                        <div className="content-block">
-                        </div>
-                    </div>)
+                    </div>
+                    <div className="content-block">
+                    </div>
+                </div>)
         });
 
         serList.push({
             name: "Transwiser",
             template: (
                 <div>
-                    <div className="float-right"><a href="http://www.transwiser.com" rel="noopener noreferrer" target="_blank"><Translate content="gateway.website" /></a></div>
+                    <div className="float-right"><a href="http://www.transwiser.com" rel="noopener noreferrer"
+                                                    target="_blank"><Translate content="gateway.website"/></a></div>
                     <table className="table">
                         <thead>
                         <tr>
-                            <th><Translate content="gateway.symbol" /></th>
-                            <th><Translate content="gateway.deposit_to" /></th>
-                            <th><Translate content="gateway.balance" /></th>
-                            <th><Translate content="gateway.withdraw" /></th>
+                            <th><Translate content="gateway.symbol"/></th>
+                            <th><Translate content="gateway.deposit_to"/></th>
+                            <th><Translate content="gateway.balance"/></th>
+                            <th><Translate content="gateway.withdraw"/></th>
                         </tr>
                         </thead>
                         <tbody>
                         {/* <TranswiserDepositWithdraw
-                            issuerAccount="transwiser-wallet"
-                            account={account.get("name")}
-                            receiveAsset="TCNY" /> */}
+                         issuerAccount="transwiser-wallet"
+                         account={account.get("name")}
+                         receiveAsset="TCNY" /> */}
                         <TranswiserDepositWithdraw
                             issuerAccount="transwiser-wallet"
                             account={account.get("name")}
-                            receiveAsset="CNY" />
+                            receiveAsset="CNY"/>
                         {/*
-                        <TranswiserDepositWithdraw
-                            issuerAccount="transwiser-wallet"
-                            account={this.props.account.get("name")}
-                            receiveAsset="BOTSCNY" />
-                        */}
+                         <TranswiserDepositWithdraw
+                         issuerAccount="transwiser-wallet"
+                         account={this.props.account.get("name")}
+                         receiveAsset="BOTSCNY" />
+                         */}
                         </tbody>
                     </table>
                 </div>
@@ -227,42 +260,61 @@ class AccountDepositWithdraw extends React.Component {
             template: (<BitKapital viewSettings={this.props.viewSettings} account={account}/>)
         });
 
+        serList.push({
+            name: "RuDEX",
+            template: (
+                <div className="content-block">
+                    <div className="service-selector">
+                        <ul className="button-group segmented no-margin">
+                            <li onClick={this.toggleRuDexService.bind(this, "gateway")}
+                                className={rudexService === "gateway" ? "is-active" : ""}><a><Translate
+                                content="gateway.gateway"/></a></li>
+                            <li onClick={this.toggleRuDexService.bind(this, "fiat")}
+                                className={rudexService === "fiat" ? "is-active" : ""}><a>Fiat</a></li>
+                        </ul>
+                    </div>
+
+                    {rudexService === "gateway" && rudexGatewayCoins.length ?
+                        <RuDexGateway account={account} coins={rudexGatewayCoins}/> : null}
+
+                    {rudexService === "fiat" ?
+                        <div>
+                            <RuDexFiat viewSettings={this.props.viewSettings} account={account}/>
+                        </div> : null}
+                </div>
+            )
+        });
+
         return serList;
     }
 
     render() {
-        let { account } = this.props;
-        let { activeService } = this.state;
-
-        let blockTradesGatewayCoins = this.props.blockTradesBackedCoins.filter(coin => {
-            if (coin.backingCoinType.toLowerCase() === "muse") {
-                return false;
-            }
-            return coin.symbol.toUpperCase().indexOf("TRADE") !== -1;
-        })
-        .map(coin => {
-            return coin;
-        })
-        .sort((a, b) => {
-            if (a.symbol < b.symbol)
-                return -1;
-            if (a.symbol > b.symbol)
-                return 1;
-            return 0;
-        });
+        let {account} = this.props;
+        let {activeService} = this.state;
 
         let openLedgerGatewayCoins = this.props.openLedgerBackedCoins.map(coin => {
             return coin;
         })
-        .sort((a, b) => {
-            if (a.symbol < b.symbol)
-                return -1;
-            if (a.symbol > b.symbol)
-                return 1;
-            return 0;
-        });
+            .sort((a, b) => {
+                if (a.symbol < b.symbol)
+                    return -1;
+                if (a.symbol > b.symbol)
+                    return 1;
+                return 0;
+            });
 
-        let services = this.renderServices(blockTradesGatewayCoins, openLedgerGatewayCoins);
+        let rudexGatewayCoins = this.props.rudexBackedCoins.map(coin => {
+            return coin;
+        })
+            .sort((a, b) => {
+                if (a.symbol < b.symbol)
+                    return -1;
+                if (a.symbol > b.symbol)
+                    return 1;
+                return 0;
+            });
+
+        let services = this.renderServices(openLedgerGatewayCoins, rudexGatewayCoins);
 
         let options = services.map((services_obj, index) => {
             return <option key={index} value={index}>{services_obj.name}</option>;
@@ -271,25 +323,28 @@ class AccountDepositWithdraw extends React.Component {
             <div className={this.props.contained ? "grid-content" : "grid-container"}>
                 <div className={this.props.contained ? "" : "grid-content"} style={{paddingTop: "2rem"}}>
 
-                    <Translate content="gateway.title" component="h2" />
+                    <Translate content="gateway.title" component="h2"/>
                     <div className="grid-block vertical medium-horizontal no-margin no-padding">
                         <div className="medium-6 show-for-medium">
                             <HelpContent path="components/DepositWithdraw" section="deposit-short"/>
                         </div>
                         <div className="medium-5 medium-offset-1">
-                            <HelpContent account={account.get("name")} path="components/DepositWithdraw" section="receive"/>
+                            <HelpContent account={account.get("name")} path="components/DepositWithdraw"
+                                         section="receive"/>
                         </div>
                     </div>
                     <div>
                         <div className="grid-block vertical medium-horizontal no-margin no-padding">
                             <div className="medium-6 small-order-2 medium-order-1">
-                                <Translate component="label" className="left-label" content="gateway.service" />
-                                <select onChange={this.onSetService.bind(this)} className="bts-select" value={activeService} >
+                                <Translate component="label" className="left-label" content="gateway.service"/>
+                                <select onChange={this.onSetService.bind(this)} className="bts-select"
+                                        value={activeService}>
                                     {options}
                                 </select>
                             </div>
-                            <div className="medium-5 medium-offset-1 small-order-1 medium-order-2" style={{paddingBottom: 20}}>
-                                <Translate component="label" className="left-label" content="gateway.your_account" />
+                            <div className="medium-5 medium-offset-1 small-order-1 medium-order-2"
+                                 style={{paddingBottom: 20}}>
+                                <Translate component="label" className="left-label" content="gateway.your_account"/>
                                 <div className="inline-label">
                                     <AccountImage
                                         size={{height: 40, width: 40}}
@@ -299,8 +354,10 @@ class AccountDepositWithdraw extends React.Component {
                                            value={account.get("name")}
                                            placeholder={null}
                                            disabled
-                                           onChange={() => {}}
-                                           onKeyDown={() => {}}
+                                           onChange={() => {
+                                           }}
+                                           onKeyDown={() => {
+                                           }}
                                            tabIndex={1}
                                     />
                                 </div>
@@ -309,21 +366,23 @@ class AccountDepositWithdraw extends React.Component {
                     </div>
 
                     <div className="grid-content no-padding" style={{paddingTop: 15}}>
-                    {activeService && services[activeService] ? services[activeService].template : services[0].template}
+                        {activeService && services[activeService] ? services[activeService].template : services[0].template}
                     </div>
                 </div>
             </div>
         );
     }
-};
+}
+;
 AccountDepositWithdraw = BindToChainState(AccountDepositWithdraw);
 
 class DepositStoreWrapper extends React.Component {
 
     componentWillMount() {
         if (Apis.instance().chain_id.substr(0, 8) === "4018d784") { // Only fetch this when on BTS main net
-            GatewayActions.fetchCoins.defer(); // Openledger
-            GatewayActions.fetchCoins.defer({backer: "TRADE"}); // Blocktrades
+            GatewayActions.fetchCoins.defer({backer: "RUDEX", url:rudexAPIs.BASE+rudexAPIs.COINS_LIST}); // RuDEX
+            GatewayActions.fetchCoins.defer({backer: "OPEN", url:blockTradesAPIs.BASE_OL+blockTradesAPIs.COINS_LIST}); // Openledger
+            GatewayActions.fetchCoins.defer({backer: "TRADE", url:blockTradesAPIs.BASE+blockTradesAPIs.COINS_LIST}); // Blocktrades
         }
     }
 
@@ -341,6 +400,7 @@ export default connect(DepositStoreWrapper, {
             account: AccountStore.getState().currentAccount,
             viewSettings: SettingsStore.getState().viewSettings,
             openLedgerBackedCoins: GatewayStore.getState().backedCoins.get("OPEN", []),
+            rudexBackedCoins: GatewayStore.getState().backedCoins.get("RUDEX", []),
             blockTradesBackedCoins: GatewayStore.getState().backedCoins.get("TRADE", [])
         };
     }

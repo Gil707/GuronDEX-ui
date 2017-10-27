@@ -1,0 +1,42 @@
+image: Visual Studio 2015
+
+environment:
+  nodejs_version: "6"
+
+branches:
+  only:
+    - rudex
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+  
+  # Install scripts. (runs after repo cloning)
+install:
+  # Get the latest stable version of Node.js or io.js
+  - ps: Install-Product node $env:nodejs_version
+  # install modules
+  - cd web
+  - npm install
+  - npm run build-win32
+  - cd ../electron
+  - npm install
+  - set PATH=%PATH%;"C:\Program Files (x86)\NSIS"
+  - npm run release
+  - cd ..
+
+# Don't actually build.
+build: off
+
+artifacts:
+  - path: 'electron\releases\*.exe'
+    name: RuDEX_light
+
+deploy:
+  description: 'New version'
+  provider: GitHub
+  auth_token:
+    secure: mLCHor236wVtT7cy9UHVDRF20w7PYI+y/6Ynefoezvwp3h2fMspOR4OWynSvMJXf
+  artifact: RuDEX_light
+  draft: true
+  prerelease: false
+  force_update: true
+  on:
+    appveyor_repo_tag: true

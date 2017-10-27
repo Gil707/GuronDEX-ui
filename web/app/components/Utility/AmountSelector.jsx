@@ -65,7 +65,7 @@ class AmountSelector extends React.Component {
                 if (isNaN(value)) return "";
             }
             let parts = (value + "").split('.');
-            value = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            value = parts[0]; //.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             if (parts.length > 1) value += "." + parts[1];
         }
         return value;

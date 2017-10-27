@@ -44,7 +44,8 @@ class RefcodeInput extends React.Component {
 
     onClaim(event) {
         event.preventDefault();
-        let faucet_address = SettingsStore.getSetting("faucet_address");
+        //let faucet_address = SettingsStore.getSetting("faucet_address");
+        let faucetAddress = "https://faucet.rudex.org";
         console.log("-- RefcodeInput.onClaim -->", this.state.value, faucet_address);
         let claim_url = `${SettingsStore.getSetting("faucet_address")}/api/v1/referral_codes/${this.state.value}/claim?account=${this.props.allow_claim_to_account}`;
         fetch(claim_url, {
