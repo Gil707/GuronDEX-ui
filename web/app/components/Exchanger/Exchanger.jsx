@@ -232,7 +232,7 @@ class Exchanger extends React.Component {
             let axios = require('axios');
 
             return new Promise((resolve, reject) => {
-                axios.get("http://gurondex.io/data/jvPYp6qMj4VJFSfW/cnyrub.crs")
+                axios.get("https://market.gurondex.io/data/jvPYp6qMj4VJFSfW/cnyrub.crs")
                     .then(response => {
                         resolve(response.data);
                         this.setState({cnyrub: response.data});
