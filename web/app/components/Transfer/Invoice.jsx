@@ -119,7 +119,7 @@ class Invoice extends React.Component {
         ).then( () => {
             let hs = this.state.invoice.memo.split('#');
                 TransactionConfirmStore.listen(this.onBroadcastAndConfirm);
-                this.props.router.push(`http://test.gurondex.io/invoice/dex?r=${hs[1]}&hs=${this.state.invoice.hashlink}`);                //redirect
+                this.props.router.push(`http://test.gurondex.io/invoice/confirmed?r=${hs[1]}&hs=${this.state.invoice.hashlink}`);                //redirect
             }).catch( e => {
                 console.log( "error: ",e)
             } );
