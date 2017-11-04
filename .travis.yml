@@ -1,0 +1,42 @@
+sudo: required
+dist: trusty
+
+language: node_js
+node_js:
+  - "6"
+
+branches:
+  only:
+    - rudex
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+
+matrix:
+  include:
+    - os: osx
+      env: BUILD_WEB=0 BUILD_DESKTOP=1
+    - os: linux
+      env: BUILD_WEB=1 BUILD_DESKTOP=1
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update; sudo apt-get install -y fakeroot; fi
+
+
+install:
+  - 
+  - pushd web && npm install && popd
+  - pushd electron && npm install && popd
+
+script:
+  - if [[ "$BUILD_WEB" == "1" ]]; then pushd web && npm run build && popd; fi
+  - if [[ "$BUILD_DESKTOP" == "1" ]]; then pushd web && npm run electron && popd && pushd electron && npm run release && popd; fi
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "n+dpQi+eVJRGEEyAySYXOzIjS6ObFvGCGGdY2EhZhIMIB2U2FWIdzzhNBP4xLo2SnFgk9shLvIHHBQ5H5vyHaAICtbwQM5KLAHOXIEYzZ6q3G4/RJiSsNe7X/ZfQZ/cXZVIjOKXM2ZLQtMcV5uLZB3pwW5H2zBAYbPYjLtlIpbe4CI+RuPjVRYHks3Xf0RJifXINFwm4t9DMgV9AH0LD/N635IE1dA9eF4nr2naxSrpOVYgj1LETvZ21A9/cBAzfynB2gbva/ElWLKk07iiuWABSnyjo1dWDhCzcrQkuBGf+L5IkMcmZncN5zpscgzJQzTMYN9RYhvERqvKgc18O9QLaNcG06TlmulHwIGpbA3KNASShhckMq8WvWPQ0cPdLSIvHoql354Lz3CvCCwCdkf3+zGBgz3uA+U8p7seufSDseEFJ2On5kOO8ZsQyG0JBTVzjyQfh0EbNaxo40ZiZZTONP+C+TIS7owpVTS/2Ask7nNW7bWw9aQ61h82ub7IeCXoH2ouRRMDmikxMbRm254sEqnpCyaKO9XwApVFjgJn4mP8s7URxyVcLnMvfVmjkBJCSwmka0y1Z00oC2W4/FP3WsbIOelIQ+8Ew1M4YOoFC402H/XiQyW47Dm58UxzSZavRJMnUx5uCphxoKUUdkD+lMwB2K/4AaQFQM3GnJ9U="
+  file_glob: true
+  file: "electron/releases/*.{dmg,deb}"
+  overwrite: true
+  skip_cleanup: true
+  on:
+    tags: true

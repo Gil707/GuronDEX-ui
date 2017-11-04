@@ -15,9 +15,10 @@ import BlockTradesDepositAddressCache from "common/BlockTradesDepositAddressCach
 import CopyButton from "../Utility/CopyButton";
 import Icon from "../Icon/Icon";
 import LoadingIndicator from "../LoadingIndicator";
+import { settingsAPIs } from "api/apiConfig";
 
-// import DepositFiatOpenLedger from "components/DepositWithdraw/openledger/DepositFiatOpenLedger";
-// import WithdrawFiatOpenLedger from "components/DepositWithdraw/openledger/WithdrawFiatOpenLedger";
+import DepositFiatOpenLedger from "components/DepositWithdraw/openledger/DepositFiatOpenLedger";
+import WithdrawFiatOpenLedger from "components/DepositWithdraw/openledger/WithdrawFiatOpenLedger";
 
 class DepositWithdrawContent extends React.Component {
 
@@ -33,7 +34,7 @@ class DepositWithdrawContent extends React.Component {
         coreAsset: "1.3.0",
         globalObject: "2.0.0",
         issuer: "openledger-wallet"
-    }
+    };
 
     constructor(props) {
         super();
@@ -41,6 +42,9 @@ class DepositWithdrawContent extends React.Component {
             toAddress: WithdrawAddresses.getLast(props.walletType),
             withdrawValue:"",
             amountError: null,
+            symbol:props.asset.get("symbol"),
+            intermediateAccount: props.asset.get("intermediateAccount"),
+            gateFee: props.asset.get("gateFee"),
             to_withdraw: new Asset({
                 asset_id: props.asset.get("id"),
                 precision: props.asset.get("precision")
@@ -64,6 +68,9 @@ class DepositWithdrawContent extends React.Component {
                     asset_id: np.asset.get("id"),
                     precision: np.asset.get("precision")
                 }),
+                gateFee: np.asset.get("gateFee"),
+                intermediateAccount: np.asset.get("intermediateAccount"),
+                symbol:np.asset.get("symbol"),
                 memo: "",
                 withdrawValue: "",
                 receive_address: null,
@@ -130,13 +137,13 @@ class DepositWithdrawContent extends React.Component {
 
         let fee = this._getFee();
 
-        let feeToSubtract = this.state.to_withdraw.asset_id !== fee.asset ? 0 :
-            fee.amount;
+
+        let widthraw_converted = this.state.withdrawValue * Math.pow(10,this.state.to_withdraw.precision);
 
         AccountActions.transfer(
             this.props.sender.get("id"),
-            this.props.issuer.get("id"),
-            this.state.to_withdraw.getAmount() - feeToSubtract,
+            this.props.intermediateAccount,
+            parseInt(widthraw_converted),
             this.state.to_withdraw.asset_id,
             this.props.backingCoinType.toLowerCase() + ":" + this.state.toAddress + (this.state.memo ? ":" + new Buffer(this.state.memo, "utf-8") : ""),
             null,
@@ -145,15 +152,23 @@ class DepositWithdrawContent extends React.Component {
     }
 
     _updateAmount(amount) {
+        let fee = this._getFee();
+        let gateFee = parseFloat(this.props.gateFee);
+        let feeToSubtract = this.state.to_withdraw.asset_id !== fee.asset ? 0 : fee.amount;
+        let fee_precision = this.state.to_withdraw.precision;
         this.state.to_withdraw.setAmount({sats: amount});
+
+        let total_minus_fee = this.state.to_withdraw.getAmount({real: true}) - gateFee - (feeToSubtract/Math.pow(10,fee_precision))*1.095; //@#>
+
         this.setState({
-            withdrawValue: this.state.to_withdraw.getAmount({real: true}),
+            withdrawValue: total_minus_fee<0?0:total_minus_fee,
             amountError: null
         });
     }
 
     _getFee() {
         let {globalObject, asset, coreAsset, balances} = this.props;
+        asset = asset.set("is_currency_fee",true);
         return utils.getFee({
             opType: "transfer",
             options: [],
@@ -205,8 +220,8 @@ class DepositWithdrawContent extends React.Component {
                     });
                 }
             }).catch(err => {
-                console.error("Error when validating address:", err);
-            });
+            console.error("Error when validating address:", err);
+        });
     }
 
     _openRegistrarSite(e) {
@@ -216,23 +231,24 @@ class DepositWithdrawContent extends React.Component {
     }
 
     _renderWithdraw() {
-        const {name: assetName} = utils.replaceName(this.props.asset.get("symbol"), !!this.props.asset.get("bitasset"));
+        const {replacedName} = utils.replaceName(this.props.asset.get("symbol"), !!this.props.asset.get("bitasset"));
+        let assetName = replacedName;
         let tabIndex = 1;
         const {supportsMemos} = this.props;
 
-        // if(this.props.fiatModal){
-        //     if(~this.props.fiatModal.indexOf('canFiatWith')){
-        //         return (<WithdrawFiatOpenLedger
-        //             account={this.props.account}
-        //             issuer_account="openledger-fiat"
-        //             deposit_asset={this.props.asset.get("symbol").split('OPEN.').join('')}
-        //             receive_asset={this.props.asset.get("symbol")}
-        //             rpc_url={SettingsStore.rpc_url}
-        //         />);
-        //     }else{
-        //         return (<p>Click <a href='#' onClick={this._openRegistrarSite} >here</a> to register for deposits </p>);
-        //     }
-        // }
+        if(this.props.fiatModal){
+            if(~this.props.fiatModal.indexOf('canFiatWith')){
+                return (<WithdrawFiatOpenLedger
+                    account={this.props.account}
+                    issuer_account="openledger-fiat"
+                    deposit_asset={this.props.asset.get("symbol").split('OPEN.').join('')}
+                    receive_asset={this.props.asset.get("symbol")}
+                    rpc_url={settingsAPIs.RPC_URL}
+                />);
+            }else{
+                return (<p>{counterpart.translate("simple_trade.click")} <a href='#' onClick={(e)=>{ window.open(settingsAPIs.OPENLEDGER_FACET_REGISTR,'_blank');}} >{counterpart.translate("simple_trade.here")}</a> {counterpart.translate("simple_trade.to_register")} </p>);
+            }
+        }
 
         return (
             <div>
@@ -284,24 +300,27 @@ class DepositWithdrawContent extends React.Component {
 
     _renderDeposit() {
         const {receive_address} = this.state;
-        const {name: assetName} = utils.replaceName(this.props.asset.get("symbol"), !!this.props.asset.get("bitasset"));
+        const {name: replacedName} = utils.replaceName(this.props.asset.get("symbol"), !!this.props.asset.get("bitasset"));
+
+        let assetName = replacedName;
         const hasMemo = receive_address && "memo" in receive_address && receive_address.memo;
         const addressValue = receive_address && receive_address.address || "";
         let tabIndex = 1;
 
-        // if(this.props.fiatModal){
-        //     if(~this.props.fiatModal.indexOf('canFiatDep')){
-        //         return (<DepositFiatOpenLedger
-        //             account={this.props.account}
-        //             issuer_account="openledger-fiat"
-        //             deposit_asset={this.props.asset.get("symbol").split('OPEN.').join('')}
-        //             receive_asset={this.props.asset.get("symbol")}
-        //             rpc_url={SettingsStore.rpc_url}
-        //         />);
-        //     }else{
-        //         return (<p>Click <a href='#' onClick={this._openRegistrarSite} >here</a> to register for deposits </p>);
-        //     }
-        // }
+        if(this.props.fiatModal){
+            if(~this.props.fiatModal.indexOf('canFiatDep')){
+                return (<DepositFiatOpenLedger
+                    account={this.props.account}
+                    issuer_account="openledger-fiat"
+                    deposit_asset={this.props.asset.get("symbol").split('OPEN.').join('')}
+                    receive_asset={this.props.asset.get("symbol")}
+                    rpc_url={settingsAPIs.RPC_URL}
+                />);
+            }else{
+                return (<p>{counterpart.translate("simple_trade.click")} <a href='#' onClick={(e)=>{ window.open(settingsAPIs.OPENLEDGER_FACET_REGISTR,'_blank');}} >{counterpart.translate("simple_trade.here")}</a> {counterpart.translate("simple_trade.to_register")} </p>);
+            }
+        }
+
         return (
             <div className={!addressValue ? "no-overflow" : ""}>
                 <p><Translate unsafe content="gateway.add_funds" account={this.props.sender.get("name")} /></p>
@@ -321,6 +340,7 @@ class DepositWithdrawContent extends React.Component {
                             />
                         </span>
                     </label>}
+                    {this.props.asset.get("symbol").indexOf("OPEN.BTC")==0?<img src={`https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${addressValue}`} />:null }
                     {hasMemo ?
                         <label>
                             <span className="inline-label">
@@ -348,7 +368,8 @@ class DepositWithdrawContent extends React.Component {
     }
 
     _renderCurrentBalance() {
-        const {name: assetName} = utils.replaceName(this.props.asset.get("symbol"), !!this.props.asset.get("bitasset"));
+        const {name: replacedName} = utils.replaceName(this.props.asset.get("symbol"), !!this.props.asset.get("bitasset"));
+        let assetName = replacedName;
         const isDeposit = this.props.action === "deposit";
 
         let currentBalance = this.props.balances.find(b => {
@@ -361,6 +382,8 @@ class DepositWithdrawContent extends React.Component {
             amount: currentBalance.get("balance")
         }) : null;
 
+        let fee = this._getFee();
+
         // TEMP //
         // asset = new Asset({
         //     asset_id: this.props.asset.get("id"),
@@ -370,21 +393,21 @@ class DepositWithdrawContent extends React.Component {
 
         const applyBalanceButton = isDeposit ?
             <span style={{border: "2px solid black", borderLeft: "none"}} className="form-label">{assetName}</span> :
-        (
-            <button
-                data-place="right" data-tip={counterpart.translate("tooltip.withdraw_full")}
-                className="button"
-                style={{border: "2px solid black", borderLeft: "none"}}
-                onClick={this._updateAmount.bind(this, !currentBalance ? 0 : parseInt(currentBalance.get("balance"), 10))}
-            >
-                <Icon name="clippy" />
-            </button>
-        );
+            (
+                <button
+                    data-place="right" data-tip={counterpart.translate("tooltip.withdraw_full")}
+                    className="button"
+                    style={{border: "2px solid black", borderLeft: "none"}}
+                    onClick={this._updateAmount.bind(this, !currentBalance ? 0 : parseInt(currentBalance.get("balance"), 10))}
+                >
+                    <Icon name="clippy" />
+                </button>
+            );
 
         return (
             <div className="SimpleTrade__withdraw-row" style={{fontSize: "1rem"}}>
                 <label style={{fontSize: "1rem"}}>
-                    {counterpart.translate("gateway.balance_asset", {asset: assetName})}:
+                    {counterpart.translate("gateway.balance_asset", {asset: assetName||"aaa"})}:
                     <span className="inline-label">
                         <input
                             disabled
@@ -407,7 +430,7 @@ class DepositWithdrawContent extends React.Component {
             return null;
         }
 
-        const {name: assetName} = utils.replaceName(asset.get("symbol"), true);
+        const {replacedName: assetName} = utils.replaceName(asset.get("symbol"), true);
 
         return (
             <div className="SimpleTrade__modal">

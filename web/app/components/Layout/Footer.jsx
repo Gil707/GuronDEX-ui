@@ -72,9 +72,10 @@ class Footer extends React.Component {
                         (<div className="grid-block shrink">
                             <Translate content="footer.block" /> &nbsp;
                             <pre>#{block_height} </pre> &nbsp;
-                            { now - bt > 5 ? <TimeAgo ref="footer_head_timeago" time={block_time} /> : <span data-tip="Synchronized" data-place="left"><Icon name="checkmark-circle" /></span> }
+                            { now - bt > 5 ? <TimeAgo ref="footer_head_timeago" time={block_time} /> : <span data-tip="Synchronized" data-place="left"><Icon name="checkmark-circle" />&nbsp;</span> }
                         </div>) :
                         <div className="grid-block shrink"><Translate content="footer.loading" /></div>}
+                    {<div className="grid-block shrink">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>}
                 </div>
             </div>
         );

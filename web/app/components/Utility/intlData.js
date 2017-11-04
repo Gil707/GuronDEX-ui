@@ -1,5 +1,11 @@
 module.exports = {
     formats: {
+        "number": {
+            asset: {
+                style: "decimal",
+                useGrouping: false
+            }
+        },
         "date": {
             full: {
                 second: "numeric",

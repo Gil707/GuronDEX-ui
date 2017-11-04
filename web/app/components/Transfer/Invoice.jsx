@@ -4,6 +4,8 @@ import FormattedAsset from "../Utility/FormattedAsset";
 import AccountActions from "actions/AccountActions";
 import AccountSelector from "../Account/AccountSelector";
 import AccountInfo from "../Account/AccountInfo";
+import AccountStore from "stores/AccountStore";
+import AmountSelector from "../Utility/AmountSelector";
 import BalanceComponent from "../Utility/BalanceComponent";
 import {ChainStore, FetchChainObjects} from "bitsharesjs/es";
 import NotificationActions from "actions/NotificationActions";
@@ -11,6 +13,7 @@ import TransactionConfirmStore from "stores/TransactionConfirmStore";
 import {decompress} from "lzma";
 import bs58 from "common/base58";
 import utils from "common/utils";
+import {withRouter} from "react-router";
 
 // invoice example:
 //{
@@ -33,12 +36,17 @@ class Invoice extends React.Component {
         super(props);
         this.state = {
             invoice: null,
-            pay_from_name: 'gil707',
+            pay_from_name: null,
             pay_from_account: null,
             error: null,
-            link: null
+            link: null,
+            asset_id: null,         // default currency from invoice
+            feeAsset: null,
+            hashlink: null
         };
         this.onBroadcastAndConfirm = this.onBroadcastAndConfirm.bind(this);
+
+
     }
 
     componentDidMount() {
@@ -105,12 +113,18 @@ class Invoice extends React.Component {
             to_account.get("id"),
             parseInt(amount * precision, 10),
             asset.get("id"),
-            this.state.invoice.memo
+            this.state.invoice.memo,
+            null,
+            this.state.feeAsset.get("id")
         ).then( () => {
+            let hs = this.state.invoice.memo.split('#');
                 TransactionConfirmStore.listen(this.onBroadcastAndConfirm);
+                this.props.router.push(`http://test.gurondex.io/invoice/confirmed?r=${hs[1]}&hs=${this.state.invoice.hashlink}`);                //redirect
             }).catch( e => {
                 console.log( "error: ",e)
             } );
+
+
     }
 
     fromChanged(pay_from_name) {
@@ -121,26 +135,73 @@ class Invoice extends React.Component {
         this.setState({pay_from_account});
     }
 
+    onFeeChanged({asset}) {
+        this.setState({feeAsset: asset, error: null});
+    }
+
+    setNestedRef(ref) {
+        this.nestedRef = ref;
+    }
+
+    _getAvailableAssets(state = this.state) {
+
+        // CNY - 1.3.113
+
+        const { pay_from_account, from_error } = state;
+
+        let fee_asset_types = [];  //exclude CNY
+
+        if (!(pay_from_account && pay_from_account.get("balances") && !from_error)) {
+            return fee_asset_types;
+        }
+        let account_balances = state.pay_from_account.get("balances").toJS();
+        fee_asset_types = Object.keys(account_balances).sort(utils.sortID);
+
+        for (let key in account_balances) {
+            let asset = ChainStore.getObject(key);
+            let balanceObject = ChainStore.getObject(account_balances[key]);
+            if (balanceObject && balanceObject.get("balance") === 0) {
+                if (fee_asset_types.indexOf(key) !== -1) {
+                    fee_asset_types.splice(fee_asset_types.indexOf(key), 1);
+                }
+            }
+
+            if (asset) {
+                if (asset.get("id") !== "1.3.0" && !utils.isValidPrice(asset.getIn(["options", "core_exchange_rate"]))) {
+                    fee_asset_types.splice(fee_asset_types.indexOf(key), 1);
+                }
+            }
+        }
+
+        return fee_asset_types;
+    }
+
     render() {
         console.log("-- Invoice.render -->", this.state.invoice);
         if(this.state.error) return(<div><br/><h4 className="has-error text-center">{this.state.error}</h4></div>);
         if(!this.state.invoice) return null;
         if(!this.state.asset) return (<div><br/><h4 className="has-error text-center">Asset {this.state.invoice.currency} is not supported by this blockchain.</h4></div>);
 
+        let currentAccount = AccountStore.getState().currentAccount;
+        if (!this.state.pay_from_name) this.setState({pay_from_name: currentAccount});
+
+        let asset_types = this._getAvailableAssets();
+
         let invoice = this.state.invoice;
         let total_amount = this.getTotal(invoice.line_items);
         let asset = this.state.invoice.currency;
+
         let balance = null;
         if(this.state.pay_from_account) {
             let balances = this.state.pay_from_account.get("balances");
             console.log("-- Invoice.render balances -->", balances.get(this.state.asset.get("id")));
             balance = balances.get(this.state.asset.get("id"));
         }
-        let items = invoice.line_items.map( i => {
+        let items = invoice.line_items.map( (i,k) => {
             let price = this.parsePrice(i.price);
             let amount = i.quantity * price;
             return (
-                <tr>
+                <tr key={k}>
                     <td>
                         <div className="item-name">{i.label}</div>
                         <div className="item-description">{i.quantity} x {<FormattedAsset amount={i.price} asset={asset} exact_amount={true}/>}</div>
@@ -149,6 +210,11 @@ class Invoice extends React.Component {
                 </tr>
             );
         });
+
+        if (!this.state.asset_id) {
+            this.setState({asset_id: invoice.fee_id});
+        }
+
         let payButtonClass = classNames("button", {disabled: !this.state.pay_from_account});
         return (
             <div className="grid-block vertical">
@@ -182,7 +248,7 @@ class Invoice extends React.Component {
 
                             <form>
                                 <div className="grid-block">
-                                    <div className="grid-content medium-4">
+                                    <div className="grid-content medium-3">
                                         {/*<AccountSelect ref="pay_from" account_names={accounts} onChange={this.onAccountChange.bind(this)}/>*/}
                                         <AccountSelector label="transfer.pay_from"
                                                          accountName={this.state.pay_from_name}
@@ -198,6 +264,21 @@ class Invoice extends React.Component {
                                     }
                                 </div>
                                 <br/>
+                                <div className="grid-block">
+                                    <div className="grid-content medium-3">
+                                        <AmountSelector
+                                            refCallback={this.setNestedRef.bind(this)}
+                                            label="transfer.fee"
+                                            disabled={true}
+                                            // amount={fee}
+                                            onChange={this.onFeeChanged.bind(this)}
+                                            asset={asset_types.length && this.state.feeAsset ? this.state.feeAsset.get("id") : ( asset_types.length === 1 ? asset_types[0] : this.state.asset_id ? this.state.asset_id : asset_types[0])}
+                                            assets={asset_types}
+                                            // tabIndex={tabIndex++}
+                                        />
+                                    </div>
+                                </div>
+                                <br/>
                                 <a href className={payButtonClass} onClick={this.onPayClick.bind(this)}>
                                     Pay <FormattedAsset amount={total_amount} asset={asset} exact_amount={true}/> to {invoice.to}
                                 </a>
@@ -210,4 +291,4 @@ class Invoice extends React.Component {
     }
 }
 
-export default Invoice;
+export default withRouter(Invoice);

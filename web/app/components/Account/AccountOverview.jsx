@@ -42,13 +42,12 @@ class AccountOverview extends React.Component {
             bridgeAsset: null,
             alwaysShowAssets: [
                 "BTS",
+                "RUBLE",
                 "USD",
                 "CNY",
                 "RUBLE",
                 "OPEN.BTC",
-                "OPEN.USDT",
                 "OPEN.ETH",
-                "OPEN.MAID",
                 "OPEN.STEEM",
                 "OPEN.DASH"
             ]
@@ -137,6 +136,7 @@ class AccountOverview extends React.Component {
             let {market} = assetUtils.parseDescription(asset.getIn(["options", "description"]));
             symbol = asset.get("symbol");
             if (symbol.indexOf("OPEN.") !== -1 && !market) market = "USD";
+            if (symbol == "PPY") market = "RUBLE";
             let preferredMarket = market ? market : core_asset ? core_asset.get("symbol") : "BTS";
 
             /* Table content */
@@ -175,9 +175,11 @@ class AccountOverview extends React.Component {
             const includeAsset = !hiddenAssets.includes(asset_type);
             const hasBalance = !!balanceObject.get("balance");
             const hasOnOrder = !!orders[asset_type];
-            const canDepositWithdraw = !!this.props.backedCoins.get("OPEN", []).find(a => a.symbol === asset.get("symbol"));
+            // FIXME: temporary disabled deposit/withdraw from account screen
+            //  because wrong form used here
+            const canDepositWithdraw = false;//!!this.props.backedCoins.get("OPEN", []).find(a => a.symbol === asset.get("symbol"));
             const canWithdraw = canDepositWithdraw && (hasBalance && balanceObject.get("balance") != 0);
-            const canBuy = !!this.props.bridgeCoins.get(symbol);
+            const canBuy = false;//!!this.props.bridgeCoins.get(symbol);
 
             let onOrders = hasOnOrder ? <FormattedAsset amount={orders[asset_type]} asset={asset_type} /> : null;
 
@@ -265,6 +267,8 @@ class AccountOverview extends React.Component {
                 if (!!this.props.bridgeCoins.get(asset)) {
                     isAvailable = true;
                 }
+                if (asset === "RUBLE")
+                    isAvailable = true;
                 let keep = true;
                 balances.forEach(a => {
                     if (a.key === asset) keep = false;
@@ -277,7 +281,7 @@ class AccountOverview extends React.Component {
                     const includeAsset = !hiddenAssets.includes(asset.get("id"));
 
                     const canDepositWithdraw = !!this.props.backedCoins.get("OPEN", []).find(a => a.symbol === asset.get("symbol"));
-                    const canBuy = !!this.props.bridgeCoins.get(asset.get("symbol"));
+                    const canBuy = false;//!!this.props.bridgeCoins.get(asset.get("symbol"));
 
                     const notCore = asset.get("id") !== "1.3.0";
                     let {market} = assetUtils.parseDescription(asset.getIn(["options", "description"]));
@@ -574,8 +578,7 @@ class BalanceWrapper extends React.Component {
 
     componentWillMount() {
         if (Apis.instance().chain_id.substr(0, 8) === "4018d784") { // Only fetch this when on BTS main net
-            GatewayActions.fetchCoins();
-            GatewayActions.fetchBridgeCoins();
+            GatewayActions.fetchCoins({backer: "OPEN"});
         }
     }
 

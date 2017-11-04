@@ -1,4 +1,5 @@
 import React from "react";
+import {IntlProvider} from "react-intl";
 import {FormattedNumber} from "react-intl";
 import utils from "common/utils";
 import ChainTypes from "./ChainTypes";
@@ -101,11 +102,14 @@ class FormattedPrice extends React.Component {
                 base_asset.get("precision");
             }
             formatted_value = (
+                <IntlProvider locale='en'>
                 <FormattedNumber
+                    format="asset"
                     value={value}
                     minimumFractionDigits={2}
                     maximumFractionDigits={decimals}
                 />
+                </IntlProvider>
             );
         }
         let symbols = hide_symbols ? "" :

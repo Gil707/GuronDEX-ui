@@ -21,19 +21,19 @@ class BlockTradesGateway extends React.Component {
 
     _getActiveCoin(props, state) {
         let cachedCoin = props.viewSettings.get(`activeCoin_${props.provider}_${state.action}`, null);
-		let firstTimeCoin = null;
-		if ((props.provider == 'blocktrades') && (state.action == 'deposit')) {
-			firstTimeCoin = 'BTC';
-		}
-		if ((props.provider == 'openledger') && (state.action == 'deposit')) {
-			firstTimeCoin = 'BTC';
-		}
-		if ((props.provider == 'blocktrades') && (state.action == 'withdraw')) {
-			firstTimeCoin = 'TRADE.BTC';
-		}
-		if ((props.provider == 'openledger') && (state.action == 'withdraw')) {
-			firstTimeCoin = 'OPEN.BTC';
-		}
+        let firstTimeCoin = null;
+        if ((props.provider == 'blocktrades') && (state.action == 'deposit')) {
+            firstTimeCoin = 'BTC';
+        }
+        if ((props.provider == 'openledger') && (state.action == 'deposit')) {
+            firstTimeCoin = 'BTC';
+        }
+        if ((props.provider == 'blocktrades') && (state.action == 'withdraw')) {
+            firstTimeCoin = 'TRADE.BTC';
+        }
+        if ((props.provider == 'openledger') && (state.action == 'withdraw')) {
+            firstTimeCoin = 'OPEN.BTC';
+        }
         let activeCoin = cachedCoin ? cachedCoin : firstTimeCoin;
         return activeCoin;
     }
@@ -90,7 +90,7 @@ class BlockTradesGateway extends React.Component {
             if (!a || !a.symbol) {
                 return false;
             } else {
-                return action === "deposit" ? a.depositAllowed : a.withdrawalAllowed;
+                return true;
             }
         });
 
@@ -108,8 +108,8 @@ class BlockTradesGateway extends React.Component {
         if (!coin) coin = filteredCoins[0];
 
         let issuers = {
-            blocktrades: {name: "blocktrades", id: "1.2.32567", support: "support@blocktrades.us"},
-            openledger: {name: "openledger-wallet", id: "1.2.96397", support: "support@openledger.info"}
+            blocktrades: {name: "blocktrades", support: "support@openledger.info"},
+            openledger: {name: coin.intermediateAccount, support: "support@openledger.info"}
         };
 
         let issuer = issuers[provider];
@@ -137,71 +137,71 @@ class BlockTradesGateway extends React.Component {
                         <label style={{minHeight: "2rem"}} className="left-label"><Translate content="gateway.gateway_text" />:</label>
                         <div style={{paddingBottom: 15}}>
                             <ul className="button-group segmented no-margin">
-                            <li className={action === "deposit" ? "is-active" : ""}><a onClick={this.changeAction.bind(this, "deposit")}><Translate content="gateway.deposit" /></a></li>
-                            <li className={action === "withdraw" ? "is-active" : ""}><a onClick={this.changeAction.bind(this, "withdraw")}><Translate content="gateway.withdraw" /></a></li>
+                                <li className={action === "deposit" ? "is-active" : ""}><a onClick={this.changeAction.bind(this, "deposit")}><Translate content="gateway.deposit" /></a></li>
+                                <li className={action === "withdraw" ? "is-active" : ""}><a onClick={this.changeAction.bind(this, "withdraw")}><Translate content="gateway.withdraw" /></a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
                 {!coin ? null :
-                <div>
+                    <div>
 
 
-                    <div style={{marginBottom: 15}}>
-                        <BlockTradesGatewayDepositRequest
-                            key={`${provider}.${coin.symbol}`}
-                            gateway={provider}
-                            issuer_account={issuer.name}
-                            account={account}
-                            deposit_asset={coin.backingCoinType.toUpperCase()}
-                            deposit_asset_name={coin.name}
-                            deposit_coin_type={coin.backingCoinType.toLowerCase()}
-                            deposit_account={coin.depositAccount}
-                            deposit_wallet_type={coin.walletType}
-                            receive_asset={coin.symbol}
-                            receive_coin_type={coin.symbol.toLowerCase()}
-                            supports_output_memos={coin.supportsMemos}
-                            action={this.state.action}
-                        />
-                        <label className="left-label">Support</label>
-                        <div><Translate content="gateway.support_block" /><br /><br /><a href={"mailto:" + issuer.support}>{issuer.support}</a></div>
+                        <div style={{marginBottom: 15}}>
+                            <BlockTradesGatewayDepositRequest
+                                key={`${provider}.${coin.symbol}`}
+                                gateway={provider}
+                                issuer_account={issuer.name}
+                                account={account}
+                                deposit_asset={coin.backingCoinType.toUpperCase()}
+                                deposit_asset_name={coin.name}
+                                deposit_coin_type={coin.backingCoinType.toLowerCase()}
+                                deposit_account={coin.depositAccount}
+                                deposit_wallet_type={coin.walletType}
+                                receive_asset={coin.symbol}
+                                receive_coin_type={coin.symbol.toLowerCase()}
+                                supports_output_memos={coin.supportsMemos}
+                                action={this.state.action}
+                            />
+                            <label className="left-label">Support</label>
+                            <div><Translate content="gateway.support_block" /><br /><br /><a href={"mailto:" + issuer.support}>{issuer.support}</a></div>
+                        </div>
+
+                        {coin && coin.symbol ?
+                            <TransactionWrapper
+                                asset={coin.symbol}
+                                fromAccount={
+                                    isDeposit ? (issuer.id) :
+                                        this.props.account.get("id")
+                                }
+                                to={
+                                    isDeposit ? ( this.props.account.get("id") ) :
+                                        (issuer.id)
+                                }
+
+                            >
+                                { ({asset, to, fromAccount}) => {
+                                    return <RecentTransactions
+                                        accountsList={Immutable.List([this.props.account.get("id")])}
+                                        limit={10}
+                                        compactView={true}
+                                        fullHeight={true}
+                                        filter="transfer"
+                                        title={<Translate content={"gateway.recent_" + this.state.action} />}
+                                        customFilter={{
+                                            fields: ["to", "from", "asset_id"],
+                                            values: {
+                                                to: to.get("id"),
+                                                from: fromAccount.get("id") ,
+                                                asset_id: asset.get("id")
+                                            }
+                                        }}
+                                    />;
+                                }
+                                }
+                            </TransactionWrapper> : null}
                     </div>
-
-                    {coin && coin.symbol ?
-                    <TransactionWrapper
-                        asset={coin.symbol}
-                        fromAccount={
-                            isDeposit ? (issuer.id) :
-                            this.props.account.get("id")
-                        }
-                        to={
-                            isDeposit ? ( this.props.account.get("id") ) :
-                            (issuer.id)
-                        }
-
-                    >
-                        { ({asset, to, fromAccount}) => {
-                            return <RecentTransactions
-                                accountsList={Immutable.List([this.props.account.get("id")])}
-                                limit={10}
-                                compactView={true}
-                                fullHeight={true}
-                                filter="transfer"
-                                title={<Translate content={"gateway.recent_" + this.state.action} />}
-                                customFilter={{
-                                    fields: ["to", "from", "asset_id"],
-                                    values: {
-                                        to: to.get("id"),
-                                        from: fromAccount.get("id") ,
-                                        asset_id: asset.get("id")
-                                    }
-                                }}
-                            />;
-                        }
-                        }
-                    </TransactionWrapper> : null}
-                </div>
                 }
             </div>
         )

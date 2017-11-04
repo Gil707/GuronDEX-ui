@@ -199,7 +199,8 @@
 
 
   .page-layout {
-    background-color: $bg-color;
+    //background-color: $bg-color;
+    background: linear-gradient(to bottom, $bg-color, #292929 30%, #283438 100%);
 
     .left-column {
       border-top-color: $bg-color;
@@ -215,7 +216,8 @@
     }
 
     .main-content {
-      background-color: $bg-color;
+      //background-color: $bg-color;
+      background: linear-gradient(to bottom, $bg-color, #292929 30%, #283438 100%);
     }
 
     .right-column {

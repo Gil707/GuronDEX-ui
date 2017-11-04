@@ -1,4 +1,5 @@
 import React from "react";
+import {IntlProvider} from "react-intl";
 import {FormattedNumber} from "react-intl";
 import utils from "common/utils";
 import assetUtils from "common/asset_utils";
@@ -104,11 +105,14 @@ class FormattedAsset extends React.Component {
         return (
                 <span className={colorClass}  >
                 {!hide_amount ?
+                    <IntlProvider locale='en'>
                     <FormattedNumber
+                        format="asset"
                         value={this.props.exact_amount ? amount : amount / precision}
                         minimumFractionDigits={0}
                         maximumFractionDigits={decimals}
                     />
+                    </IntlProvider>
                 : null}
                 {!hide_asset && (this.props.assetInfo ? (
                     <span>&nbsp;
