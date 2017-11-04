@@ -1,1 +1,15 @@
-8.23
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>cny_rub course</title>
+    <header name = "Access-Control-Allow-Origin" value = "*" />
+  </head>
+<body>
+<pre style="word-wrap: break-word; white-space: pre-wrap;">{
+  "cny_rub": 8.67
+}
+</pre>
+</body>
+</html>

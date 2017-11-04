@@ -66,7 +66,7 @@ class WalletActions {
                 // using faucet
 
                 //let faucetAddress = SettingsStore.getSetting("faucet_address");
-                let faucetAddress = "https://faucet.rudex.org";
+                let faucetAddress = "http://faucet.gurondex.io";
                 if (window && window.location && window.location.protocol === "https:") {
                     faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
                 }
@@ -149,7 +149,7 @@ class WalletActions {
             // using faucet
 
             //let faucetAddress = SettingsStore.getSetting("faucet_address");
-            let faucetAddress = "https://faucet.rudex.org";
+            let faucetAddress = "http://faucet.gurondex.io";
             if (window && window.location && window.location.protocol === "https:") {
                 faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
             }
