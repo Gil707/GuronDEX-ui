@@ -15,6 +15,8 @@
     "dashboard": "전체보기",
     "explorer": "탐색기",
     "exchange": "거래소",
+    "exchanger": "Exchanger",
+    "orderpay": "Pay",
     "payments": "전송",
     "logout": "로그아웃",
     "settings": "설정",
@@ -30,6 +32,18 @@
     "unlocked_tip": "지갑이 잠금해제 되어있습니다. 잠금을 눌러주세요.",
     "account_notify": "The active account is now %(account)s",
     "account_value": "계정 값"
+  },
+  "exchanger":{
+    "header":"Exchanger details",
+    "description": "Here you can exchange your bitRUBLE for bitCNY at the rate below. bitCNY You will get back to the wallet from which you send bitRUBLE!",
+    "option": "The exchange is realized by GuronDEX. Please send bitRUBLE to get bitCNY.",
+    "cnyrub": "Exchange rate bitCNY to bitRUBLE: ",
+    "throw": "Throw: "
+  },
+  "orderpay":{
+    "header":"Payment details",
+    "description": "You can pay for the order of bitCNY or bitRUBLE, in case of payment for bitRUBLE the amount will be automatically recalculated at the rate lower in bitCNY. When paying for the order, please indicate the number in the note!",
+    "option": "Payment is realized by GuronDEX. Please send bitCNY (or bitRUBLE) to pay for the order."
   },
   "tooltip": {
     "call_limit": "This is the call price of the least collateralized margin position in the market.",

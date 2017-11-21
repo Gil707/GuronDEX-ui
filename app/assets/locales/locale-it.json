@@ -20,11 +20,13 @@
     "sub_text_2" : "Dopo aver sincronizzato l'ora, ricarica questa pagina.<br/><br/>Se l'ora è già impostata correttamente, il server API che stai utilizzando potrebbe essere fuori sincrono. In questo caso, prova ad utilizzare un altro server dalla lista seguente."
   },
   "header": {
-    "title": "BitShares UI",
+    "title": "GuronDEX UI",
     "account": "Account",
     "dashboard": "Dashboard",
     "explorer": "Esplora",
     "exchange": "Exchange",
+    "exchanger": "Exchanger",
+    "orderpay": "Pay",
     "payments": "Invia",
     "logout": "Logout",
     "settings": "Impostazioni",
@@ -41,6 +43,18 @@
     "unlocked_tip": "<br/>Clicca per fare il logout e bloccare il tuo portafoglio.<br/><br/>Chiudere la finestra del browser effettuerà automaticamente il log out.",
     "account_notify": "L'account attivo è ora %(account)s",
     "account_value": "Valore dell'Account"
+  },
+  "exchanger":{
+    "header":"Exchanger details",
+    "description": "Here you can exchange your bitRUBLE for bitCNY at the rate below. bitCNY You will get back to the wallet from which you send bitRUBLE!",
+    "option": "The exchange is realized by GuronDEX. Please send bitRUBLE to get bitCNY.",
+    "cnyrub": "Exchange rate bitCNY to bitRUBLE: ",
+    "throw": "Throw: "
+  },
+  "orderpay":{
+    "header":"Payment details",
+    "description": "You can pay for the order of bitCNY or bitRUBLE, in case of payment for bitRUBLE the amount will be automatically recalculated at the rate lower in bitCNY. When paying for the order, please indicate the number in the note!",
+    "option": "Payment is realized by GuronDEX. Please send bitCNY (or bitRUBLE) to pay for the order."
   },
   "tooltip": {
     "call_limit": "Questo è il prezzo di chiamata (call price) della posizione con margine nel mercato con la più bassa garanzia.",

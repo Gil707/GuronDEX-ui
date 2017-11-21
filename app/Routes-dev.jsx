@@ -28,6 +28,9 @@ import AccountOrders from "./components/Account/AccountOrders";
 import ExchangeContainer from "./components/Exchange/ExchangeContainer";
 import MarketsContainer from "./components/Exchange/MarketsContainer";
 import Transfer from "./components/Transfer/Transfer";
+import Exchanger from "./components/Exchanger/Exchanger";
+import Orderpay from "./components/Exchanger/Orderpay";
+import Confirmed from "./components/Transfer/Confirmed";
 import SettingsContainer from "./components/Settings/SettingsContainer";
 import BlockContainer from "./components/Blockchain/BlockContainer";
 import Asset from "./components/Blockchain/Asset";
@@ -91,6 +94,9 @@ const routes = (
         <Route path="explorer/markets" component={MarketsContainer} />
         <Route path="market/:marketID" component={ExchangeContainer} />
         <Route path="settings" component={SettingsContainer} />
+        <Route path="exchanger" component={Exchanger}/>
+        <Route path="orderpay" component={Orderpay}/>
+        <Route path="confirmed" component={Confirmed}/>
         <Route path="block/:height" component={BlockContainer} />
         <Route path="asset/:symbol" component={Asset} />
         <Route path="create-account" component={LoginSelector}>

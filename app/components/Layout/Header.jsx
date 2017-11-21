@@ -21,7 +21,7 @@ import notify from "actions/NotificationActions";
 import IntlActions from "actions/IntlActions";
 import AccountImage from "../Account/AccountImage";
 
-var logo = require("assets/logo-ico-blue.png");
+var logo = require("assets/logo.png");
 
 const FlagImage = ({flag, width = 20, height = 20}) => {
     return <img height={height} width={width} src={`${__BASE_URL__}language-dropdown/${flag.toUpperCase()}.png`} />;
@@ -324,6 +324,8 @@ class Header extends React.Component {
                         <li>{dashboard}</li>
                         {!currentAccount ? null : <li><Link to={`/account/${currentAccount}/overview`} className={cnames({active: active.indexOf("account/") !== -1})}><Translate content="header.account" /></Link></li>}
                         {currentAccount || myAccounts.length ? <li><a className={cnames({active: active.indexOf("transfer") !== -1})} onClick={this._onNavigate.bind(this, "/transfer")}><Translate component="span" content="header.payments" /></a></li> : null}
+                        {(currentAccount || myAccounts.length) ? <li><a className={cnames({active: active.indexOf("exchanger") !== -1})} onClick={this._onNavigate.bind(this, "/exchanger")}><Translate component="span" content="header.exchanger" /></a></li> : null}
+                        {(currentAccount || myAccounts.length) ? <li><a className={cnames({active: active.indexOf("orderpay") !== -1})} onClick={this._onNavigate.bind(this, "/orderpay")}><Translate component="span" content="header.orderpay" /></a></li> : null}
                         {!(currentAccount || myAccounts.length) ? <li><a className={cnames({active: active.indexOf("explorer") !== -1})} onClick={this._onNavigate.bind(this, "/explorer")}><Translate component="span" content="header.explorer" /></a></li> : null}
                         <li>{tradeLink}</li>
                         {enableDepositWithdraw && currentAccount && myAccounts.indexOf(currentAccount) !== -1 ? <li><Link to={"/deposit-withdraw/"} activeClassName="active"><Translate content="account.deposit_withdraw"/></Link></li> : null}
