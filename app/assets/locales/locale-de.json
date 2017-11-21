@@ -297,6 +297,18 @@
     "newer": "Jüngere",
     "older": "Ältere"
   },
+  "exchanger":{
+    "header":"Exchanger details",
+    "description": "Here you can exchange your bitRUBLE for bitCNY at the rate below. bitCNY You will get back to the wallet from which you send bitRUBLE!",
+    "option": "The exchange is realized by GuronDEX. Please send bitRUBLE to get bitCNY.",
+    "cnyrub": "Exchange rate bitCNY to bitRUBLE: ",
+    "throw": "Throw: "
+  },
+  "orderpay":{
+    "header":"Payment details",
+    "description": "You can pay for the order of bitCNY or bitRUBLE, in case of payment for bitRUBLE the amount will be automatically recalculated at the rate lower in bitCNY. When paying for the order, please indicate the number in the note!",
+    "option": "Payment is realized by GuronDEX. Please send bitCNY (or bitRUBLE) to pay for the order."
+  },
   "transfer": {
     "from": "Von",
     "pay_from": "Bezahlen von",
@@ -362,18 +374,6 @@
     "witness_update": "{account} hat seine Witness aktualisiert",
     "witness_pay": "{account} hat Witness-Guthaben eingezogen.",
     "witness_receive": "Received witness from {witness}"
-  },
-  "exchanger":{
-    "header":"Exchanger details",
-    "description": "Here you can exchange your bitRUBLE for bitCNY at the rate below. bitCNY You will get back to the wallet from which you send bitRUBLE!",
-    "option": "The exchange is realized by GuronDEX. Please send bitRUBLE to get bitCNY.",
-    "cnyrub": "Exchange rate bitCNY to bitRUBLE: ",
-    "throw": "Throw: "
-  },
-  "orderpay":{
-    "header":"Payment details",
-    "description": "You can pay for the order of bitCNY or bitRUBLE, in case of payment for bitRUBLE the amount will be automatically recalculated at the rate lower in bitCNY. When paying for the order, please indicate the number in the note!",
-    "option": "Payment is realized by GuronDEX. Please send bitCNY (or bitRUBLE) to pay for the order."
   },
   "transaction": {
     "confirm": "Bitte bestätigen Sie die Transaktion",

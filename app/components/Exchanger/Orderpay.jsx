@@ -495,7 +495,7 @@ class Transfer extends React.Component {
                             />
                         </div>
                         {/*  T O  */}
-                        <div className="content-block">
+                        <div className="hidden-content-block">
                             <AccountSelector
                                 label="transfer.to"
                                 accountName={to_name}

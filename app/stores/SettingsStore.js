@@ -8,6 +8,7 @@ import { Apis } from "bitsharesjs-ws";
 import { settingsAPIs } from "api/apiConfig";
 
 const CORE_ASSET = "BTS"; // Setting this to BTS to prevent loading issues when used with BTS chain which is the most usual case currently
+const RUBLE_ASSET = "RUBLE"; // Setting this to BTS to prevent loading issues when used with BTS chain which is the most usual case currently
 
 const STORAGE_KEY = "__graphene__";
 let ss = new ls(STORAGE_KEY);
@@ -33,14 +34,14 @@ class SettingsStore {
 
         this.initDone = false;
         this.defaultSettings = Immutable.Map({
-            locale: "en",
+            locale: "ru",
             apiServer: settingsAPIs.DEFAULT_WS_NODE,
             faucet_address: settingsAPIs.DEFAULT_FAUCET,
-            unit: CORE_ASSET,
+            unit: RUBLE_ASSET,
             showSettles: false,
             showAssetPercent: false,
             walletLockTimeout: 60 * 10,
-            themes: "darkTheme",
+            themes: "olDarkTheme",
             passwordLogin: true
         });
 
@@ -64,6 +65,7 @@ class SettingsStore {
             unit: [
                 CORE_ASSET,
                 "USD",
+                "RUBLE",
                 "CNY",
                 "BTC",
                 "EUR",
@@ -162,7 +164,7 @@ class SettingsStore {
 
             let bases = {
                 markets_4018d784: [ // BTS MAIN NET
-                    "USD", "OPEN.BTC", "CNY", "BTS", "BTC"
+                    "USD", "OPEN.BTC", "RUBLE", "CNY", "BTS", "BTC"
                 ],
                 markets_39f5e2ed: [ // TESTNET
                     "TEST"

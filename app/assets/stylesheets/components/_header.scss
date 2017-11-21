@@ -9,18 +9,19 @@
 }
 
 .float-left > span.icon.user {
-    top: 0;
+  top: 0;
 }
 
 .header {
-    .electron-navigation > ul > li {
-        border: none;
-    }
-    &.primary {
-        border-bottom: 1px solid $border-color;
-    }
+  .electron-navigation > ul > li {
+    border: none;
+  }
+  &.primary {
+    border-bottom: 1px solid $border-color;
+  }
   padding-left: 0 !important;
-  min-height: 66px;
+  min-height: 52px;
+  max-height: 52px;
   text-transform: uppercase;
   .menu-bar > li {
 
@@ -29,37 +30,43 @@
     border-right: 1px solid $border-color;
     > a {
       font-weight: bold;
-      line-height: 2rem;
+      line-height: 1rem;
       padding-left: 0.5rem;
       padding-right: 0.5rem;
-      font-size: 0.9rem;
+      padding-top: 1.5rem;
+      font-size: 0.75rem;
       @include breakpoint(large) {
-        padding-left: 1.75rem;
-        padding-right: 1.75rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
       }
     }
   }
 }
 
+.gurondex-option {
+  font-family: Impact;
+  color: #9b9b9b;
+}
+
 div.header-balance {
-    a {
-        font-size: 90%;
-        font-weight: bold;
-        &:hover {
-            background-color: transparent !important;
-        };
-    }
+  a {
+    font-size: 90%;
+    font-weight: bold;
+    &:hover {
+      background-color: transparent !important;
+    };
+  }
 }
 
 div.account-drop-down {
-    font-size: 90%;
-    .dropdown-divider {
-        padding-bottom: 10px;
-    }
+  font-size: 90%;
+  .dropdown-divider {
+    padding-bottom: 10px;
+  }
   a.button {
-      font-weight: bold;
-      font-size: 90%;
-      background-color: transparent;
+    font-weight: bold;
+    font-size: 90%;
+    background-color: transparent;
   }
   a:active.button, a:hover.button {
     background-color: transparent !important;
@@ -67,17 +74,18 @@ div.account-drop-down {
 }
 
 div.header-right-menu {
-    > .grp-menu-item {
-        border-left: 1px solid $border-color;
-        line-height: 2rem;
+  font-size: 13px;
+  > .grp-menu-item {
+    border-left: 1px solid $border-color;
+    line-height: 2rem;
 
-        > a {
-            @include breakpoint(large) {
-              padding-left: 1.25rem;
-              padding-right: 1.25rem;
-            }
-        }
+    > a {
+      @include breakpoint(large) {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+      }
     }
+  }
 }
 
 .grp-menu-items-group {
@@ -103,8 +111,4 @@ div.header-right-menu {
 .user-icon > a {
   padding-left: 0.3rem;
   padding-right: 0.3rem;
-}
-
-.lower-case {
-  text-transform: lowercase;
 }

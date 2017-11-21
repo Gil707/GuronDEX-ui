@@ -495,6 +495,18 @@ class Transfer extends React.Component {
                             />
                         </div>
                         {/*/!*  T O  *!/*/}
+                        <div className="hidden-content-block">
+                            <AccountSelector
+                                label="transfer.to"
+                                accountName={to_name}
+                                onChange={this.toChanged.bind(this)}
+                                onAccountChanged={this.onToAccountChanged.bind(this)}
+                                account={to_name}
+                                size={60}
+                                tabIndex={tabIndex++}
+                            />
+                        </div>
+                        {/*/!*  T O  *!/*/}
                         {/*<div className="content-block">*/}
                             {/*<AccountSelector*/}
                                 {/*label="transfer.to"*/}

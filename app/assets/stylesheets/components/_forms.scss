@@ -124,9 +124,9 @@ div.transfer-input {
           width: calc(100% - 9rem);
       }
       > button {
-          position: absolute;
+          position: relative;
           right: 0;
-          bottom: 0;
+          bottom: -20px;
           font-size: 1.3rem;
           border-radius: 5px;
       }
